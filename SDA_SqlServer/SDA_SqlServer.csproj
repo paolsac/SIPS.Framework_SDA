@@ -1,0 +1,42 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <RootNamespace>SIPS.Framework.$(MSBuildProjectName.Replace(" ", "_"))</RootNamespace>
+    <Copyright>Copyright © 2023 Paolo Saccani</Copyright>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <PackageId>SIPS.Framework.$(AssemblyName)</PackageId>
+    <Title>Core module for SIPS framework</Title>
+    <Company>Studio Ing. Paolo Saccani</Company>
+    <Authors>Paolo Saccani</Authors>
+    <Product>SIPS.Framework</Product>
+    <PackageProjectUrl></PackageProjectUrl>
+    <Description>SDA provider for Sql Server.</Description>
+    <RepositoryType>git</RepositoryType>
+    <RepositoryUrl>https://github.com/paolsac/SIPS.Framework_SDA</RepositoryUrl>
+    <PackageReleaseNotes>Initial release.</PackageReleaseNotes>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
+    <AssemblyVersion></AssemblyVersion>
+    <FileVersion></FileVersion>
+    <PackageVersion>1.0.1-rc</PackageVersion>
+    <NeutralLanguage>en-US</NeutralLanguage>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="..\README.md">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+  </ItemGroup>
+
+
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Data.SqlClient" Version="5.2.1" />
+    <PackageReference Include="SIPS.Framework.SDA" Version="1.0.1-rc" />
+  </ItemGroup>
+
+</Project>
+
