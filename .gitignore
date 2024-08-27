@@ -396,3 +396,7 @@ FodyWeavers.xsd
 
 # JetBrains Rider
 *.sln.iml
+
+/SDA/.nuget-push
+/SDA_Postgress/.nuget-push
+/SDA_SqlServer/.nuget-push
