@@ -20,7 +20,7 @@
     <PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
     <AssemblyVersion></AssemblyVersion>
     <FileVersion></FileVersion>
-    <PackageVersion>1.0.1-rc</PackageVersion>
+    <PackageVersion>1.0.3-rc</PackageVersion>
     <NeutralLanguage>en-US</NeutralLanguage>
   </PropertyGroup>
 
@@ -34,8 +34,8 @@
 
 
   <ItemGroup>
-    <PackageReference Include="Npgsql" Version="8.0.3" />
-    <PackageReference Include="SIPS.Framework.SDA" Version="1.0.1-rc" />
+    <PackageReference Include="Npgsql" Version="5.0.18" />
+    <PackageReference Include="SIPS.Framework.SDA" Version="1.0.3-rc" />
   </ItemGroup>
 
 </Project>

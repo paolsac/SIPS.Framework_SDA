@@ -9,8 +9,8 @@ namespace SIPS.Framework.SDA.Api
     {
         public string EndpointName { get; set; }
         public string Query { get; set; }
-        public SDA_CNST_StatementDefinitionMode StatementDefMode { get; internal set; }
-        public ISDA_StatementLibrary QueryLibrary { get; internal set; }
+        public SDA_CNST_StatementDefinitionMode StatementDefMode { get;  set; }
+        public ISDA_StatementLibrary QueryLibrary { get; set; }
         public Func<object> ParametersGetter { get; set; }
         public Func<Dictionary<string,string>> PlaceholdersGetter { get; set; }
         public Dictionary<string, object> DynamicProperties { get; set; } = new Dictionary<string, object>();
