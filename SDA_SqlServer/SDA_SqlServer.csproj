@@ -20,8 +20,10 @@
     <PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
     <AssemblyVersion></AssemblyVersion>
     <FileVersion></FileVersion>
-    <PackageVersion>1.0.3-rc</PackageVersion>
+    <PackageVersion>1.0.4-local</PackageVersion>
     <NeutralLanguage>en-US</NeutralLanguage>
+    <IncludeSymbols>True</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
   </PropertyGroup>
 
   <ItemGroup>
@@ -35,7 +37,7 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.Data.SqlClient" Version="5.2.1" />
-    <PackageReference Include="SIPS.Framework.SDA" Version="1.0.3-rc" />
+    <PackageReference Include="SIPS.Framework.SDA" Version="1.0.4-local" />
   </ItemGroup>
 
 </Project>
