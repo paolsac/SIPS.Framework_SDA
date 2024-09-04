@@ -12,7 +12,7 @@ namespace SIPS.Framework.SDA.Api
         public SDA_CNST_StatementDefinitionMode StatementDefMode { get;  set; }
         public ISDA_StatementLibrary QueryLibrary { get; set; }
         public Func<object> ParametersGetter { get; set; }
-        public Func<Dictionary<string,string>> PlaceholdersGetter { get; set; }
+        public Dictionary<string,Func<string>> PlaceholdersGetter { get; set; }
         public Dictionary<string, object> DynamicProperties { get; set; } = new Dictionary<string, object>();
     }
 

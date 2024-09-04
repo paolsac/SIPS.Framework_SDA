@@ -30,7 +30,7 @@ namespace SIPS.Framework.SDA.Providers
             _state = state;
         }
 
-        public ISDA_Endpoint_DBCommandProvider LocateDataSourceProvider(string endpointDescriptorName)
+        internal ISDA_Endpoint_DBCommandProvider LocateDataSourceProvider(string endpointDescriptorName)
         {
             var endpointDescriptor = _EndpointDescriptorProvider.GetEndpoint(endpointDescriptorName);
             if (endpointDescriptor.ConnectionString == null)

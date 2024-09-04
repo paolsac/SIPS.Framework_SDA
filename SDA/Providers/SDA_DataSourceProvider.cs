@@ -49,7 +49,7 @@ namespace SIPS.Framework.SDA.Providers
                 EndpointName = dataSourceLibraryEndpointName,
                 StatementDefMode = SDA_CNST_StatementDefinitionMode.ExplicitSQL,
                 Query = dataSourceLibraryQuery,
-                PlaceholdersGetter = () => new Dictionary<string, string> { },
+                PlaceholdersGetter = new Dictionary<string, Func<string>> { },
                 ParametersGetter = () => new { ds_name = ds_name }
             };
             _configuration = configuration;
@@ -117,7 +117,7 @@ namespace SIPS.Framework.SDA.Providers
                 EndpointName = implicitDataSource.EndpointName,
                 StatementDefMode = implicitDataSource.StatementDefMode,
                 Query = implicitDataSource.Query,
-                PlaceholdersGetter = () => new Dictionary<string, string> { },
+                PlaceholdersGetter = new Dictionary<string, Func<string>> { },
                 ParametersGetter = () => null
             };
 

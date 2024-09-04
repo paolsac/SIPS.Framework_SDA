@@ -72,10 +72,17 @@ namespace SIPS.Framework.SDA.Providers
                 }
                 if (dataSourceDefinition.PlaceholdersGetter != null && applyPlaceholders)
                 {
-                    var placeholders = dataSourceDefinition.PlaceholdersGetter();
+                    var placeholders = dataSourceDefinition.PlaceholdersGetter;
                     foreach (var placeholder in placeholders)
                     {
-                        query = query.Replace(placeholder.Key, placeholder.Value);
+                        // replace placeholder with value
+                        // if value is a function, execute it
+                        if (placeholder.Value == null)
+                        {
+                            throw new Exception($"Placeholder {placeholder.Key} has no value");
+                        }
+
+                        query = query.Replace(placeholder.Key, placeholder.Value());
                     }
                 }
                 return query;

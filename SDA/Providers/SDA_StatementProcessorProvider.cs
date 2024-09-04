@@ -39,18 +39,22 @@ namespace SIPS.Framework.SDA.Providers
             {
 
                 SDA_EndpointDescriptor endpoint = _endpointProvider.GetEndpoint(dataSourceDefinition.EndpointName);
-                var ds = _DBEndpoint_Command_FactoryProvider.LocateDataSourceProvider(dataSourceDefinition.EndpointName);
-                var statement = _StatementBuilderProvider.BuildQuery(dataSourceDefinition);
-
-                object parameters = null;
-                if (dataSourceDefinition.ParametersGetter != null)
+                using (
+                interfaces.ISDA_Endpoint_DBCommandProvider ds = _DBEndpoint_Command_FactoryProvider.LocateDataSourceProvider(dataSourceDefinition.EndpointName))
                 {
-                    parameters = dataSourceDefinition.ParametersGetter();
+
+                    var statement = _StatementBuilderProvider.BuildQuery(dataSourceDefinition);
+
+                    object parameters = null;
+                    if (dataSourceDefinition.ParametersGetter != null)
+                    {
+                        parameters = dataSourceDefinition.ParametersGetter();
+                    }
+
+                    var results = ds.ReadFromquery<T>(statement, parameters);
+
+                    response = new SDA_Response() { Success = true, StatusMessage = "Query executed", Value = results };
                 }
-
-                var results = ds.ReadFromquery<T>(statement, parameters);
-
-                response = new SDA_Response() { Success = true, StatusMessage = "Query executed", Value = results };
                 return response;
             }
             catch (Exception ex)
@@ -66,17 +70,20 @@ namespace SIPS.Framework.SDA.Providers
             try
             {
                 SDA_EndpointDescriptor endpoint = _endpointProvider.GetEndpoint(dataSourceDefinition.EndpointName);
-                var ds = _DBEndpoint_Command_FactoryProvider.LocateDataSourceProvider(dataSourceDefinition.EndpointName);
-                var statement = _StatementBuilderProvider.BuildQuery(dataSourceDefinition);
-                object parameters = null;
-                if (dataSourceDefinition.ParametersGetter != null)
+                using (interfaces.ISDA_Endpoint_DBCommandProvider ds = _DBEndpoint_Command_FactoryProvider.LocateDataSourceProvider(dataSourceDefinition.EndpointName))
                 {
-                    parameters = dataSourceDefinition.ParametersGetter();
+                    var statement = _StatementBuilderProvider.BuildQuery(dataSourceDefinition);
+                    object parameters = null;
+                    if (dataSourceDefinition.ParametersGetter != null)
+                    {
+                        parameters = dataSourceDefinition.ParametersGetter();
+                    }
+
+                    var results = ds.ReadFromquery<T>(statement, parameters).FirstOrDefault();
+
+                    response = new SDA_Response() { Success = true, StatusMessage = "Query executed", Value = results };
                 }
 
-                var results = ds.ReadFromquery<T>(statement, parameters).FirstOrDefault();
-
-                response = new SDA_Response() { Success = true, StatusMessage = "Query executed", Value = results };
                 return response;
             }
             catch (Exception ex)
@@ -98,18 +105,20 @@ namespace SIPS.Framework.SDA.Providers
             {
 
                 SDA_EndpointDescriptor endpoint = _endpointProvider.GetEndpoint(dataSourceDefinition.EndpointName);
-                var ds = _DBEndpoint_Command_FactoryProvider.LocateDataSourceProvider(dataSourceDefinition.EndpointName);
-                var statement = _StatementBuilderProvider.BuildQuery(dataSourceDefinition);
-
-                object parameters = null;
-                if (dataSourceDefinition.ParametersGetter != null)
+                using (interfaces.ISDA_Endpoint_DBCommandProvider ds = _DBEndpoint_Command_FactoryProvider.LocateDataSourceProvider(dataSourceDefinition.EndpointName))
                 {
-                    parameters = dataSourceDefinition.ParametersGetter();
+                    var statement = _StatementBuilderProvider.BuildQuery(dataSourceDefinition);
+
+                    object parameters = null;
+                    if (dataSourceDefinition.ParametersGetter != null)
+                    {
+                        parameters = dataSourceDefinition.ParametersGetter();
+                    }
+
+                    ds.ExecCommand(statement, parameters);
+
+                    response = new SDA_Response() { Success = true, StatusMessage = "Query executed", Value = null };
                 }
-
-                ds.ExecCommand(statement, parameters);
-
-                response = new SDA_Response() { Success = true, StatusMessage = "Query executed", Value = null };
                 return response;
             }
             catch (Exception ex)
