@@ -104,7 +104,7 @@ namespace SIPS.Framework.SDA_Postgress.Providers
 
         #region Dispose
 
-        protected virtual void Dispose(bool disposing)
+        protected override void Dispose(bool disposing)
         {
             if (!disposedValue)
             {
@@ -117,6 +117,7 @@ namespace SIPS.Framework.SDA_Postgress.Providers
                 // TODO: impostare campi di grandi dimensioni su Null
                 disposedValue = true;
             }
+            base.Dispose(disposing);
         }
 
         // // TODO: eseguire l'override del finalizzatore solo se 'Dispose(bool disposing)' contiene codice per liberare risorse non gestite
@@ -126,7 +127,7 @@ namespace SIPS.Framework.SDA_Postgress.Providers
         //     Dispose(disposing: false);
         // }
 
-        public void Dispose()
+        public new void Dispose()
         {
             // Non modificare questo codice. Inserire il codice di pulizia nel metodo 'Dispose(bool disposing)'
             Dispose(disposing: true);
