@@ -95,29 +95,21 @@ namespace SIPS.Framework.SDA_SqlServer.Providers
         }
 
         #region Dispose
-        protected virtual void Dispose(bool disposing)
+        override protected void Dispose(bool disposing)
         {
+            base.Dispose(disposing);
             if (!disposedValue)
             {
                 if (disposing)
                 {
-                    // TODO: eliminare lo stato gestito (oggetti gestiti)
-                }
 
-                // TODO: liberare risorse non gestite (oggetti non gestiti) ed eseguire l'override del finalizzatore
-                // TODO: impostare campi di grandi dimensioni su Null
-                disposedValue = true;
+                    disposedValue = true;
+                }
             }
         }
 
-        // // TODO: eseguire l'override del finalizzatore solo se 'Dispose(bool disposing)' contiene codice per liberare risorse non gestite
-        // ~DB_DataSQLServerProvider()
-        // {
-        //     // Non modificare questo codice. Inserire il codice di pulizia nel metodo 'Dispose(bool disposing)'
-        //     Dispose(disposing: false);
-        // }
 
-        public void Dispose()
+        public new void Dispose()
         {
             // Non modificare questo codice. Inserire il codice di pulizia nel metodo 'Dispose(bool disposing)'
             Dispose(disposing: true);
