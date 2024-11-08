@@ -4,7 +4,6 @@ using SIPS.Framework.Core.AutoRegister.Interfaces;
 using SIPS.Framework.SDA.Api;
 using SIPS.Framework.SDA.interfaces;
 using SIPS.Framework.SDA.Providers.Base;
-using System.ComponentModel.DataAnnotations;
 
 namespace SIPS.Framework.SDA.Providers
 {
@@ -45,7 +44,7 @@ namespace SIPS.Framework.SDA.Providers
             }
             else
             {
-                throw new System.Exception($"Endpoit {endpointDescriptorName} is not a ISDA_Endpoint_DBCommandProvider");
+                throw new System.Exception($"Endpoint {endpointDescriptorName} is not a ISDA_Endpoint_DBCommandProvider");
             }
         }
 

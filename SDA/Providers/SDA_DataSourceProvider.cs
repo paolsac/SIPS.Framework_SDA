@@ -3,7 +3,6 @@ using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using SIPS.Framework.Core.AutoRegister.Interfaces;
-using SIPS.Framework.Core.Providers;
 using SIPS.Framework.SDA.Api;
 using SIPS.Framework.SDA.Constants;
 using SIPS.Framework.SDA.Providers.Base;

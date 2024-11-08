@@ -20,7 +20,6 @@ namespace SIPS.Framework.SDA.Providers
         public void test()
         {
             invocationCounter++;
-            _logger.LogInformation($"Hello, from DataEndpointDescriptionProvider! InstanceId: {InstanceId}, Invocation: {invocationCounter}");
         }
     }
 }
