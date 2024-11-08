@@ -25,3 +25,8 @@ Simple Data Access Compose in SIPS Framework.
 
 SDAC is a collection a library of providers that rely on SDA library and implement features of kind "ETL/ELT".
 
+
+# Foundational Libraries
+## SIPS.Framework
+-  [SIPS.Framework.Core.AutoRegister](https://github.com/paolsac/SIPS_Framework_core)- Base interfaces and functions to handles automatic registration of services for Autofac DI container (this repo).
+-  [SIPS.Framework.Core](https://github.com/paolsac/SIPS_Framework_core) - Core dependency resolution and common functions (this repo).
