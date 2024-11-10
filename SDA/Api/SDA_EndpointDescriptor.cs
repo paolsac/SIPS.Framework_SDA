@@ -2,6 +2,7 @@
 
 namespace SIPS.Framework.SDA.Api
 {
+
     public class SDA_EndpointDescriptor
     {
         public string Name { get; set; }

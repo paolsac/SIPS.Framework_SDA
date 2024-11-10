@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SIPS.Framework.SDA.Api;
+using System;
 using System.Collections.Generic;
 using System.Data;
 
@@ -9,8 +10,13 @@ namespace SIPS.Framework.SDA.interfaces
         string ConnectionStringName { get; set; }
         string ConnectionString { get; set; }
 
-        void BulkLoadFromDataTableWithoutMap(string tableName, DataTable dtTable);
+        SDA_BullkCopyResult BulkLoadFromDataTable(string tableName, DataTable dtTable, SDA_ColumnMappingCollections columnMappings, SDA_CommandOptions options);
+        SDA_BullkCopyResult BulkLoadFromDataReader(string tableName, IDataReader dtReader, SDA_ColumnMappingCollections columnMappings, SDA_CommandOptions options);
+        void BulkLoadFromDataTableWithoutMap(string tableName, DataTable dataTable);
+
         void ExecCommand(string query, object parameter = null);
         IEnumerable<T> ReadFromquery<T>(string query, object parameter);
+        SDA_DataReaderWrapper BeginDataReader(string query, object parameter);
+        void EndDataReader(SDA_DataReaderWrapper wrapper);
     }
 }

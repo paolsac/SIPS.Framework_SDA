@@ -16,11 +16,12 @@ namespace SIPS.Framework.SDA.Providers
         private readonly SDA_EndpointDescriptorProvider _EndpointDescriptorProvider;
         private readonly State _state;
 
-        public SDA_DBEndpoint_Command_FactoryProvider(ILogger<SDA_DBEndpoint_Command_FactoryProvider> logger,
-                                                      ILifetimeScope autofac,
-                                                      SDA_EndpointDescriptorProvider endpointDescriptorProvider,
-                                                      SDA_ProvidersCollectionForBaseProvider providers,
-                                                      State state)
+        public SDA_DBEndpoint_Command_FactoryProvider(
+            ILogger<SDA_DBEndpoint_Command_FactoryProvider> logger,
+            ILifetimeScope autofac,
+            SDA_EndpointDescriptorProvider endpointDescriptorProvider,
+            SDA_ProvidersCollectionForBaseProvider providers,
+            State state)
             : base(providers)
         {
             _logger = logger;
@@ -29,7 +30,7 @@ namespace SIPS.Framework.SDA.Providers
             _state = state;
         }
 
-        internal ISDA_Endpoint_DBCommandProvider LocateDataSourceProvider(string endpointDescriptorName)
+        internal ISDA_Endpoint_DBCommandProvider LocateEndpointCommandProvider(string endpointDescriptorName)
         {
             var endpointDescriptor = _EndpointDescriptorProvider.GetEndpoint(endpointDescriptorName);
             if (endpointDescriptor.ConnectionString == null)

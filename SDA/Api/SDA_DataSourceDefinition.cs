@@ -5,6 +5,7 @@ using System.Collections.Generic;
 
 namespace SIPS.Framework.SDA.Api
 {
+
     public class SDA_DataSourceDefinition
     {
         public string EndpointName { get; set; }

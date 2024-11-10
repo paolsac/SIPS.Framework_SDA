@@ -400,3 +400,4 @@ FodyWeavers.xsd
 /SDA/.nuget-push
 /SDA_Postgress/.nuget-push
 /SDA_SqlServer/.nuget-push
+/SDAC/SDAC_Processor/.nuget-push

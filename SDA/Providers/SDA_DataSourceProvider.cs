@@ -79,8 +79,6 @@ namespace SIPS.Framework.SDA.Providers
         }
         private  SDA_DataSourceDefinition _GetDataSource(string ds_name, Dictionary<string, object> external_parameters = null)
         {
-
-
             SDA_Response response;
 
             // Check if the datasource is already in cache
