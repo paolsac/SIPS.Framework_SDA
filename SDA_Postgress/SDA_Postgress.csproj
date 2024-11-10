@@ -20,11 +20,17 @@
     <PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
     <AssemblyVersion>0.9.1.0</AssemblyVersion>
     <FileVersion>0.9.1.0</FileVersion>
-    <PackageVersion>1.0.27-rc1</PackageVersion>
+    <PackageVersion>1.0.32-rc1</PackageVersion>
     <NeutralLanguage>en-US</NeutralLanguage>
     <IncludeSymbols>True</IncludeSymbols>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="FakesAssemblies\**" />
+    <EmbeddedResource Remove="FakesAssemblies\**" />
+    <None Remove="FakesAssemblies\**" />
+  </ItemGroup>
 
   <ItemGroup>
     <None Include="..\README.md">
@@ -37,7 +43,13 @@
 
   <ItemGroup>
     <PackageReference Include="Npgsql" Version="5.0.18" />
-    <PackageReference Include="SIPS.Framework.SDA" Version="1.0.27-rc1" />
+    <PackageReference Include="SIPS.Framework.SDA" Version="1.0.32-rc1" />
+  </ItemGroup>
+
+
+
+  <ItemGroup>
+    <AdditionalDesignTimeBuildInput Remove="FakesAssemblies\**" />
   </ItemGroup>
 
 </Project>
