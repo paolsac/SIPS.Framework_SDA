@@ -1,6 +1,6 @@
-﻿namespace SIPS.Framework.SDAC_Processor.Api.SDAC_ETLOperation
+﻿namespace SIPS.Framework.SDAC_Processor.Api.SDAC_ETLTask
 {
-    public enum SDAC_OperationTerminationReasonOptions
+    public enum SDAC_ETLTaskTerminationReasonOptions
     {
         NotTerminated,
         //Error,

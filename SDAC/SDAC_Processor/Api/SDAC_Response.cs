@@ -1,7 +1,7 @@
 ﻿using SIPS.Framework.Core.Api;
 using SIPS.Framework.Core.Interfaces;
 
-namespace SDAC_Processor.Api
+namespace SIPS.Framework.SDAC_Processor.Api
 {
     public class SDAC_Response : FC_Base_Response, IFCResponse
     {

@@ -1,4 +1,4 @@
-﻿namespace SDAC_Processor.Constants
+﻿namespace SIPS.Framework.SDAC_Processor.Constants
 {
     internal class SDAC_ConfigConstants
     {

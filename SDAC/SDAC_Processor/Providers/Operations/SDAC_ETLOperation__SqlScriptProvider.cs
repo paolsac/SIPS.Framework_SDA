@@ -1,7 +1,7 @@
-﻿using SDAC_Processor.Api;
-using SDAC_Processor.Api.SDAC_ETLDefinition;
-using SDAC_Processor.Api.SDAC_ETLOperation;
-using SDAC_Processor.Providers.Base;
+﻿using SIPS.Framework.SDAC_Processor.Api;
+using SIPS.Framework.SDAC_Processor.Api.SDAC_ETLDefinition;
+using SIPS.Framework.SDAC_Processor.Api.SDAC_ETLOperation;
+using SIPS.Framework.SDAC_Processor.Providers.Base;
 using SIPS.Framework.Core.AutoRegister.Interfaces;
 using SIPS.Framework.SDA.Api;
 using SIPS.Framework.SDA.Providers;
@@ -9,69 +9,14 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
+using System.Linq;
+using SIPS.Framework.SDAC_Processor.Extensions;
 
-namespace SDAC_Processor.Providers.Operations
+namespace SIPS.Framework.SDAC_Processor.Providers.Operations
 {
     public class SDAC_ETLOperation__SqlScriptProvider : SDAC_ETLOperation_BaseProvider, IFCAutoRegisterTransientNamed, ISDAC_ETLOperation_Provider
     {
-        private readonly SDA_DataSourceDefinition _dataSource;
-
-        public SDAC_ETLOperation__SqlScriptProvider(SDAC_ProvidersCollectionForBaseProvider sDAC_ProvidersCollection)
-            : base(sDAC_ProvidersCollection)
-        {
-            _dataSource = new SDA_DataSourceDefinition();
-        }
-
-        public async Task<SDAC_OperationActionResponse> RunAsync(Dictionary<string, object> parameters, CancellationToken token)
-        {
-            Task.Delay(1000).Wait();
-            return new SDAC_OperationActionResponse() { Succeded = true };
-        }
-
-        public override SDAC_Response SpecificSetup(SDAC_ETLSourceDefinition def)
-        {
-            ;
-            // set endpoint
-            if (!def.endpoints.TryGetValue(definition.sql_script_def.endpoint_ref, out string endpointName))
-            {
-                return new SDAC_Response() { Success = false, ErrorMessage = $"Endpoint {definition.sql_script_def.endpoint_ref} not found" };
-            }
-            _dataSource.EndpointName = endpointName;
-
-            // set StatementDefMode
-            _dataSource.StatementDefMode = definition.sql_script_def.StatementDefMode;
-
-            // set Query (mandatory per library)  
-            _dataSource.Query = definition.sql_script_def.Query;
-            switch (_dataSource.StatementDefMode)
-            {
-                case "ExplicitSQL":
-                    if (_dataSource.Query == null)
-                        _dataSource.Query = string.Join(Environment.NewLine, definition.sql_script_def.Query_multiline);
-                    break;
-                case "ByLibrary":
-                    switch (definition.sql_script_def.QueryLibrary_provider)
-                    {
-                        case "SDA_StatementLibrary_simple":
-                            _dataSource.QueryLibrary = new SDA_StatementLibrary_simple(definition.sql_script_def.QueryLibrary_content);
-                            break;
-                        default:
-                            return new SDAC_Response() { Success = false, ErrorMessage = $"QueryLibrary_provider {definition.sql_script_def.QueryLibrary_provider} not supported" };
-                    }
-                    break;
-                default:
-                    return new SDAC_Response() { Success = false, ErrorMessage = $"StatementDefMode {definition.sql_script_def.StatementDefMode} not supported" };
-            }
-
-            // set PlaceholdersGetter
-            _dataSource.PlaceholdersGetter = new Dictionary<string, Func<string>>();
-
-            // set ParametersGetter,
-            _dataSource.ParametersGetter = () => null;
-
-            return new SDAC_Response() { Success = true };
-
-        }
 
         #region Dispose
         private bool disposedValue;
@@ -107,6 +52,74 @@ namespace SDAC_Processor.Providers.Operations
             System.GC.SuppressFinalize(this);
         }
         #endregion }
+
+        private readonly object _lock = new object();
+        private readonly ILogger<SDAC_ETLOperation__SqlScriptProvider> _logger;
+        private SDA_DataSourceDefinition _dataSource;
+        private readonly SDA_StatementProcessorProvider _statementProcessorProvider;
+
+        public SDAC_ETLOperation__SqlScriptProvider(SDAC_ProvidersCollectionForBaseProvider sDAC_ProvidersCollection, SDA_StatementProcessorProvider statementProcessorProvider, ILogger<SDAC_ETLOperation__SqlScriptProvider> logger)
+            : base(sDAC_ProvidersCollection)
+        {
+            _statementProcessorProvider = statementProcessorProvider;
+            _logger = logger;
+        }
+
+        public async Task<SDAC_OperationActionResponse> RunAsync(Dictionary<string, object> parameters, CancellationToken token)
+        {
+            SDA_Response response;
+            try
+            {
+
+                // se ci sono parametri da passare al datasource, li passa
+                //if (parameters != null && parameters.Any())
+                //{
+                //    // se il datasource ha già dei parametri, li sovrascrive con quelli passati
+                //    if (_dataSource.ParametersGetter != null)
+                //    {
+                //        var ps = _dataSource.ParametersGetter() as Dictionary<string, object>;
+                //        if (ps != null)
+                //        {
+                //            foreach (var p in ps)
+                //            {
+                //                if (parameters.ContainsKey(p.Key))
+                //                {
+                //                    ps[p.Key] = parameters[p.Key];
+                //                }
+                //            }
+                //        }
+                //    }
+
+                //    // se il datasource non ha parametri, li passa direttamente
+                //    else
+                //    {
+                //        _dataSource.ParametersGetter = () => parameters;
+                //    }
+                //}
+
+                _dataSource.OverrideParameters(parameters);
+
+                response = _statementProcessorProvider.Execute(_dataSource);
+
+            }
+            catch (Exception ex)
+            {
+                ErrorMessage = ex.Message;
+                response = new SDA_Response() { Success = false, ErrorMessage = ex.Message };
+            }
+            return SDAC_OperationActionResponse.CreateFromSDA_Response(response);
+        }
+
+        public override SDAC_Response SpecificSetup(SDAC_ETLSourceDefinition def)
+        {
+            // utilizza ToSDA_DataSourceDefinition per produrre un oggetto SDA_DataSourceDefinition da un oggetto SDAC_ETLSourceDefinition
+            SDAC_Response response = definition.sql_script_def.ToSDA_DataSourceDefinition(def);
+            if (response.Success)
+            {
+                _dataSource = (SDA_DataSourceDefinition)response.Value;
+            }
+            return response;
+        }
 
     }
 }

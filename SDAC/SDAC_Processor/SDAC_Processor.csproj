@@ -2,14 +2,40 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <RootNamespace>SIPS.Framework.$(MSBuildProjectName.Replace(" ", "_"))</RootNamespace>
+    <Authors>Paolo Saccani</Authors>
+    <Title>SDAC module for SIPS framework</Title>
+    <Company>Studio Ing. Paolo Saccani</Company>
+    <Product>SIPS.Framework</Product>
+    <Description>Library of providers for ETL processing with SDA</Description>
+    <Copyright>Copyright © 2024 Paolo Saccani</Copyright>
+    <RepositoryUrl>https://github.com/paolsac/SIPS.Framework_SDA</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <NeutralLanguage>en-US</NeutralLanguage>
+    <AssemblyVersion>0.9.1.0</AssemblyVersion>
+    <FileVersion>0.9.1.0</FileVersion>
+    <PackageVersion>1.0.32-rc1</PackageVersion>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
+    <IncludeSymbols>True</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    <PackageId>SIPS.Framework.$(AssemblyName)</PackageId>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="..\..\README.md" Link="README.md">
+      <PackagePath>\</PackagePath>
+      <Pack>True</Pack>
+    </None>
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="8.0.1" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="Newtonsoft.Json.Schema" Version="4.0.1" />
-    <PackageReference Include="SIPS.Framework.Core" Version="1.0.27-rc1" />
-    <PackageReference Include="SIPS.Framework.SDA" Version="1.0.27-rc1" />
+    <PackageReference Include="Npgsql" Version="5.0.18" />
+    <PackageReference Include="SIPS.Framework.SDA" Version="1.0.32-rc1" />
   </ItemGroup>
 
 </Project>

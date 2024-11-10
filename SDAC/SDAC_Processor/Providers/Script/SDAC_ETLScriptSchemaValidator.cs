@@ -2,14 +2,14 @@
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Schema;
-using SDAC_Processor.Api;
+using SIPS.Framework.SDAC_Processor.Api;
 using SIPS.Framework.Core.AutoRegister.Interfaces;
 using SIPS.Framework.SDA.Api;
 using SIPS.Framework.SDA.Providers;
 using System;
 using System.Collections.Generic;
 
-namespace SDAC_Processor.Providers.Script
+namespace SIPS.Framework.SDAC_Processor.Providers.Script
 {
     //todo paolo: add more providers (also for the other technologies)
     //todo paolo: add a provider for the other types of commands

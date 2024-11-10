@@ -1,14 +1,15 @@
 ﻿using Autofac;
 using SIPS.Framework.Core.AutoRegister.Extensions;
-using System.IO;
-using System.Reflection;
-using System;
 using SIPS.Framework.Core.Extensions;
+using SIPS.Framework.SDAC_Processor.Attributes;
+using System;
+using System.IO;
 using System.Linq;
-using SDAC_Processor.Attributes;
+using System.Reflection;
 
-namespace SDAC_Processor.Extensions
+namespace SIPS.Framework.SDAC_Processor.Extensions
 {
+
     public static class SipsSdacContainerBuilderExtensions
     {
         private static bool _isRegistered = false;

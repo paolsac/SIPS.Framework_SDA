@@ -1,6 +1,6 @@
-﻿using SDAC_Processor.Api.SDAC_ETLOperation;
+﻿using SIPS.Framework.SDAC_Processor.Api.SDAC_ETLOperation;
 
-namespace SDAC_Processor.Api.SDAC_ETLDefinition
+namespace SIPS.Framework.SDAC_Processor.Api.SDAC_ETLDefinition
 {
     public class SDAC_ProgramOfOperationDefinition_dependency
     {

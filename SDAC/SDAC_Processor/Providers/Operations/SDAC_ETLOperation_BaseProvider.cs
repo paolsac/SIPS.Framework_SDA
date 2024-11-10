@@ -1,12 +1,12 @@
-﻿using SDAC_Processor.Api;
-using SDAC_Processor.Api.SDAC_ETLDefinition;
-using SDAC_Processor.Api.SDAC_ETLOperation;
-using SDAC_Processor.Providers.Base;
+﻿using SIPS.Framework.SDAC_Processor.Api;
+using SIPS.Framework.SDAC_Processor.Api.SDAC_ETLDefinition;
+using SIPS.Framework.SDAC_Processor.Api.SDAC_ETLOperation;
+using SIPS.Framework.SDAC_Processor.Providers.Base;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace SDAC_Processor.Providers.Operations
+namespace SIPS.Framework.SDAC_Processor.Providers.Operations
 {
     public abstract class SDAC_ETLOperation_BaseProvider : IDisposable
     {
@@ -67,6 +67,8 @@ namespace SDAC_Processor.Providers.Operations
 
         public string Key { get; set; }
         public string Name { get; set; }
+        public string ErrorMessage { get; set; }
+        public string ErrorCode { get; set; }
         public SDAC_OperationDefinition definition { get; set; }
 
         public SDAC_OperationRunStateOptions RunState { get { lock (_lock) return _RunState; } set { lock (_lock) _RunState = value; } }
@@ -154,6 +156,7 @@ namespace SDAC_Processor.Providers.Operations
                     // if they are different, return Unreachable, beacuse the result will not change
                     if (dependency.when_coded != predecessor.CompletionResult)
                     {
+                        Console.WriteLine($"- Operation {Name} is changint to not Unreachable, because dependency.when_coded = {dependency.when_coded} and predecessor.CompletionResult = {predecessor.CompletionResult}");
                         return SDAC_OperationStartReadinessOptions.Unreachable;
                     }
                 }
@@ -162,6 +165,7 @@ namespace SDAC_Processor.Providers.Operations
                 return SDAC_OperationStartReadinessOptions.Ready;
             }
         }
+
 
 
     }

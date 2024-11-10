@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace SDAC_Processor.Providers.Base
+namespace SIPS.Framework.SDAC_Processor.Providers.Base
 {
     public class SDAC_BaseProvider : IDisposable
     {

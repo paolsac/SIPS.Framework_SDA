@@ -1,16 +1,17 @@
 ﻿using Microsoft.Extensions.Logging;
-using SDAC_Processor.Api;
-using SDAC_Processor.Api.SDAC_ETLDefinition;
-using SDAC_Processor.Api.SDAC_ETLOperation;
-using SDAC_Processor.Providers.Base;
-using SDAC_Processor.Providers.Operations;
+using SIPS.Framework.SDAC_Processor.Api;
+using SIPS.Framework.SDAC_Processor.Api.SDAC_ETLDefinition;
+using SIPS.Framework.SDAC_Processor.Api.SDAC_ETLOperation;
+using SIPS.Framework.SDAC_Processor.Providers.Base;
+using SIPS.Framework.SDAC_Processor.Providers.Operations;
 using SIPS.Framework.Core.AutoRegister.Interfaces;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using ConsoleTables;
 
-namespace SDAC_Processor.Providers.Script
+namespace SIPS.Framework.SDAC_Processor.Providers.Script
 {
     public class SDAC_ETLScriptProcessorProvider : SDAC_BaseProvider, IFCAutoRegisterTransient
     {
@@ -36,8 +37,6 @@ namespace SDAC_Processor.Providers.Script
             SDAC_ETLOperationProgram program = new SDAC_ETLOperationProgram();
             program.Name = def.manifest.name;
 
-
-
             foreach (var operationDef in def.operations)
             {
                 // check if the operation is part of program
@@ -47,9 +46,14 @@ namespace SDAC_Processor.Providers.Script
                 }
 
                 // if is part the configure and add to program
-                ISDAC_ETLOperation_Provider instance = _operationFactory.LocateDataSourceProvider(operationDef);
+                ISDAC_ETLOperation_Provider instance = _operationFactory.LocateOperationProvider(operationDef);
                 // ISDAC_ETLOperation_Provider instance = SDAC_OperationFactory.CreateOperation(opDef);
-                instance.Setup(def);
+                SDAC_Response responseSetup = instance.Setup(def);
+                if (!responseSetup.Success)
+                {
+                    _logger.LogError("Build - Operation {OperationName} setup failed, because {ErrorMessage}", instance.Name, responseSetup.ErrorMessage);
+                    return responseSetup;
+                }
                 program.AddOperation(instance);
             }
 
@@ -62,10 +66,20 @@ namespace SDAC_Processor.Providers.Script
             return new SDAC_Response() { Success = true, Value = program };
         }
 
+        private class TableOperationResult
+        {
+            public string Operation { get; set; }
+            public string Status { get; set; }
+            public string Result { get; set; }
+            public string Readiness { get; set; }
+            public string Error { get; set; }
+        }
+
         public async Task<SDAC_Response> RunProgramAsync(SDAC_ETLOperationProgram program, Dictionary<string, object> parameters)
         {
             CancellationToken cancellationToken = _cancellationTokenSource.Token;
 
+            _logger.LogInformation("Run - Program {ProgramName} started -------------------------", program.Name);
             while (!program.ProgramFinished)
             {
                 if (cancellationToken.IsCancellationRequested)
@@ -119,6 +133,7 @@ namespace SDAC_Processor.Providers.Script
                             }
                             else
                             {
+                                _logger.LogError("Run - Operation {OperationName} failed, because {ErrorMessage}, {StatusMessage}", op.Name, response.ErrorMessage, response.StatusMessage);
                                 op.LockedUpdate(SDAC_OperationTerminationReasonOptions.NotTerminated, SDAC_OperationRunStateOptions.Completed, SDAC_OperationCompletionResultOptions.Error);
                                 op.CompletionResult = SDAC_OperationCompletionResultOptions.Error;
                             }
@@ -142,6 +157,24 @@ namespace SDAC_Processor.Providers.Script
             {
                 return new SDAC_Response() { Success = false, ErrorMessage = "Operation cancelled" };
             }
+
+            string operationsTable = ConsoleTable
+                .From<TableOperationResult>(program.Operations
+                    .OrderBy(ISDAC_ETLOperation_Provider => ISDAC_ETLOperation_Provider.Name)
+                    .Select(op => new TableOperationResult
+                    {
+                        Operation = op.Name,
+                        Status = op.RunState.ToString(),
+                        Result = op.CompletionResult.ToString(),
+                        Readiness = op.Readiness.ToString(),
+                        Error = op.ErrorMessage
+                    })
+                )
+                   .Configure(o => o.NumberAlignment = Alignment.Right)
+                   .ToStringAlternative();
+            _logger.LogInformation("Run - Program {ProgramName} completed with operations status: \n{OperationsTable}", program.Name, operationsTable);
+
+            _logger.LogInformation("Run - Program {ProgramName} completed -------------------------", program.Name);
 
             return new SDAC_Response() { Success = true };
         }

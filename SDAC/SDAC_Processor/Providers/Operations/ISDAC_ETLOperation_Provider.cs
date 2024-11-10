@@ -1,16 +1,19 @@
-﻿using SDAC_Processor.Api;
-using SDAC_Processor.Api.SDAC_ETLDefinition;
-using SDAC_Processor.Api.SDAC_ETLOperation;
+﻿using SIPS.Framework.SDAC_Processor.Api;
+using SIPS.Framework.SDAC_Processor.Api.SDAC_ETLDefinition;
+using SIPS.Framework.SDAC_Processor.Api.SDAC_ETLOperation;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace SDAC_Processor.Providers.Operations
+namespace SIPS.Framework.SDAC_Processor.Providers.Operations
 {
+
     public interface ISDAC_ETLOperation_Provider
     {
         string Key { get; set; }
         string Name { get; set; }
+        string ErrorMessage { get; set; }
+        string ErrorCode { get; set; }
 
         SDAC_OperationStartReadinessOptions Readiness { get; set; }
         SDAC_OperationRunStateOptions RunState { get; set; }

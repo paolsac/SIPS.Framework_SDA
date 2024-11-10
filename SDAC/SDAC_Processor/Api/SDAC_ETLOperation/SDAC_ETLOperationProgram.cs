@@ -1,11 +1,12 @@
-﻿using System;
+﻿using SIPS.Framework.SDAC_Processor.Providers.Operations;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using SDAC_Processor.Providers.Operations;
 
-namespace SDAC_Processor.Api.SDAC_ETLOperation
+namespace SIPS.Framework.SDAC_Processor.Api.SDAC_ETLOperation
 {
+
     public class SDAC_ETLOperationProgram
     {
         private object _lock = new object();
@@ -26,12 +27,13 @@ namespace SDAC_Processor.Api.SDAC_ETLOperation
             ISDAC_ETLOperation_Provider[] operationsToCheck = _operations.Values
                 .Where(operation => operation.Readiness == SDAC_OperationStartReadinessOptions.NotReady)
                 .ToArray();
+
             foreach (ISDAC_ETLOperation_Provider operation in operationsToCheck)
             {
-                var state = operation.CheckReadinessStatus(this);
-                if (state != SDAC_OperationStartReadinessOptions.NotReady)
+                var newReadiness = operation.CheckReadinessStatus(this);
+                if (newReadiness != SDAC_OperationStartReadinessOptions.NotReady)
                 {
-                    operation.Readiness = state;
+                    operation.Readiness = newReadiness;
                 }
             }
         }
@@ -51,8 +53,21 @@ namespace SDAC_Processor.Api.SDAC_ETLOperation
             {
                 lock (_lock)
                 {
-                    return _operations.Values.All(op => op.RunState == SDAC_OperationRunStateOptions.Completed || op.Readiness == SDAC_OperationStartReadinessOptions.Unreachable)
-                        || _operations.Values.Any(op => op.RunState == SDAC_OperationRunStateOptions.Terminated);
+                    var c1 = _operations.Values.All(op => op.RunState == SDAC_OperationRunStateOptions.Completed || op.Readiness == SDAC_OperationStartReadinessOptions.Unreachable);
+                    var c3 = _operations.Values.Any(op => op.RunState == SDAC_OperationRunStateOptions.Terminated);
+
+                    var result = c1 || c3;
+                    //if (result)
+                    //{
+                    //    Console.WriteLine($"- c1 is {c1}");
+                    //    Console.WriteLine($"- c3 is {c3}");
+                    //    foreach (var op in _operations.Values)
+                    //    {
+                    //        Console.WriteLine($"- {op.Name} - {op.RunState} - {op.Readiness} - {op.CompletionResult}");
+                    //    }
+
+                    //}
+                    return c1 || c3;
                 }
             }
         }
@@ -79,12 +94,16 @@ namespace SDAC_Processor.Api.SDAC_ETLOperation
             }
         }
 
-        public ReadOnlyCollection<ISDAC_ETLOperation_Provider> Operations { get {
+        public ReadOnlyCollection<ISDAC_ETLOperation_Provider> Operations
+        {
+            get
+            {
                 lock (_lock)
                 {
                     return new ReadOnlyCollection<ISDAC_ETLOperation_Provider>(_operations.Values.ToList());
                 }
-            } }
+            }
+        }
     }
 
 }

@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace SDAC_Processor.Api.SDAC_ETLDefinition
+namespace SIPS.Framework.SDAC_Processor.Api.SDAC_ETLDefinition
 {
 
     public class SDAC_ETLSourceDefinition

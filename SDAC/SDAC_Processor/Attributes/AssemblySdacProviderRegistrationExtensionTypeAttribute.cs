@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace SDAC_Processor.Attributes
+namespace SIPS.Framework.SDAC_Processor.Attributes
 {
     // Definisci un custom attribute chiamato AssemblyInfoAttribute
     [AttributeUsage(AttributeTargets.Class)]
