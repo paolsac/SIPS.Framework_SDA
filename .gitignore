@@ -401,3 +401,5 @@ FodyWeavers.xsd
 /SDA_Postgress/.nuget-push
 /SDA_SqlServer/.nuget-push
 /SDAC/SDAC_Processor/.nuget-push
+/SDA_Oracle/.nuget-push
+/TestApps/Lab01/Lab01.csproj

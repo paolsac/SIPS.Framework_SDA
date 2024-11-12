@@ -1,6 +1,4 @@
-﻿using Autofac.Core;
-using Autofac.Diagnostics;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using SIPS.Framework.Core.AutoRegister.Interfaces;
 using SIPS.Framework.SDA.Api;
 using SIPS.Framework.SDA.Providers;
@@ -14,7 +12,6 @@ using SIPS.Framework.SDAC_Processor.Providers.DataFlowTasks.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Linq;
 
 namespace SIPS.Framework.SDAC_Processor.Providers.DataFlowTasks.sources
 {

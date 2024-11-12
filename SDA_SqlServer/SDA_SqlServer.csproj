@@ -6,7 +6,7 @@
     <Copyright>Copyright © 2023 Paolo Saccani</Copyright>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
     <PackageId>SIPS.Framework.$(AssemblyName)</PackageId>
-    <Title>Core module for SIPS framework</Title>
+    <Title>SDA module for SIPS framework</Title>
     <Company>Studio Ing. Paolo Saccani</Company>
     <Authors>Paolo Saccani</Authors>
     <Product>SIPS.Framework</Product>
