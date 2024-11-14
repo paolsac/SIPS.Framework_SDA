@@ -137,7 +137,7 @@ namespace SIPS.Framework.SDA.Providers
             }
             catch (Exception ex)
             {
-                return SDA_Response.Error("Internal server error", ex.Message);
+                return SDA_Response.Error(ex.Message, ex.Message);
             }
         }
 
@@ -179,7 +179,7 @@ namespace SIPS.Framework.SDA.Providers
             }
             catch (Exception ex)
             {
-                return SDA_Response.Error("Internal server error", ex.Message);
+                return SDA_Response.Error(ex.Message, ex.Message);
             }
 
         }
@@ -210,7 +210,7 @@ namespace SIPS.Framework.SDA.Providers
             }
         }
 
-        public SDA_Response EndDataReader()
+        public SDA_Response EndDataReader() 
         {
             SDA_Response response = null;
             try
@@ -261,7 +261,7 @@ namespace SIPS.Framework.SDA.Providers
             }
             catch (Exception ex)
             {
-                return SDA_Response.Error("Internal server error", ex.Message);
+                return SDA_Response.Error(ex.Message, ex.Message);
             }
 
         }

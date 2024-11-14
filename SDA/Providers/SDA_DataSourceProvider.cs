@@ -77,7 +77,13 @@ namespace SIPS.Framework.SDA.Providers
                 return _GetDataSource(ds_name, external_parameters);
             }
         }
-        private  SDA_DataSourceDefinition _GetDataSource(string ds_name, Dictionary<string, object> external_parameters = null)
+        //clear cache
+        public void ClearCache()
+        {
+            _cache.Dispose();
+        }
+
+        private SDA_DataSourceDefinition _GetDataSource(string ds_name, Dictionary<string, object> external_parameters = null)
         {
             SDA_Response response;
 
@@ -93,6 +99,7 @@ namespace SIPS.Framework.SDA.Providers
                     throw new Exception($"Error reading datasource definition {ds_name}, Error: {response.StatusMessage}");
                 }
             }
+
 
             List < implicitVarDef > castedValue = response.Value as List<implicitVarDef>;
             if (!response.Success )

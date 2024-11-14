@@ -18,12 +18,12 @@
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageReleaseNotes>
-      add datareader and bulkinsert features
+      fix message error statementProcessorProvider and add clear cache in datasourceProvider
     </PackageReleaseNotes>
     <PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
     <AssemblyVersion>0.9.1.0</AssemblyVersion>
     <FileVersion>0.9.1.0</FileVersion>
-    <PackageVersion>1.0.32-rc1</PackageVersion>
+    <PackageVersion>1.0.33-rc1</PackageVersion>
     <NeutralLanguage>en-US</NeutralLanguage>
     <IncludeSymbols>True</IncludeSymbols>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
