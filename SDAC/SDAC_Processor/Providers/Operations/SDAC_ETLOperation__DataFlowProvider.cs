@@ -192,50 +192,6 @@ namespace SIPS.Framework.SDAC_Processor.Providers.Operations
             return SDAC_OperationActionResponse.CreateSuccessResponse("Bulk copy completed");
 
 
-            var connectionStringSS = "Server=tcp:127.0.0.1\\ps19_sqlserver01,1433;Database=sda_test;User Id=sda_user;Password=Gbm??yCHxiSMH8pJ;TrustServerCertificate=True;Connection Timeout=10;";
-            var connectionStringPG = "Host = localhost; Database = 'lab_sda'; Port = 5432; Username = 'sda_admin'; Password = '3yqhRL7eQbEM$Fc!'; Include Error Detail='true'; KeepAlive=100; CommandTimeout=300; Timeout=300";
-
-            try
-            {
-
-                // open connection to PostgreSQL using connectionStringPG
-                using (var connectionPG = new NpgsqlConnection(connectionStringPG))
-                {
-                    connectionPG.Open();
-
-                    string sql = "SELECT id, nome FROM public.newtable";
-
-                    // create data reader
-                    using (var reader = connectionPG.ExecuteReader(sql))
-                    {
-                        // open connection to SQL Server using connectionStringSS
-                        using (var connectionSS = new SqlConnection(connectionStringSS))
-                        {
-                            connectionSS.Open();
-
-                            // create bulk copy object
-                            using (var bulkCopy = new SqlBulkCopy(connectionSS))
-                            {
-                                bulkCopy.DestinationTableName = "dbo.newtable";
-
-                                // write data to SQL Server
-                                bulkCopy.WriteToServer(reader);
-                            }
-                        }
-                    }
-
-                }
-
-                return SDAC_OperationActionResponse.CreateSuccessResponse("Bulk copy completed");
-
-
-
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error during bulk copy");
-                return SDAC_OperationActionResponse.CreateErrorResponse(ex.Message);
-            }
         }
 
         public override SDAC_Response SpecificSetup(SDAC_ETLSourceDefinition def)
