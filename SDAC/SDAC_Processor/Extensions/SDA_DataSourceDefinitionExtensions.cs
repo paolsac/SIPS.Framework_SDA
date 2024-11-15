@@ -44,39 +44,44 @@ namespace SIPS.Framework.SDAC_Processor.Extensions
 
                         foreach (var item in externalParameters)
                         {
-                            if (ps.ParameterNames.Contains(item.Key))
-                            {
-                                // se item.value è una stringa, prova a fare il parse in base al tipo originale o al dbtype, con priorità al dbtype
-                                if (item.Value is string)
-                                {
-                                    // provo con il dbtype
-                                    if (t != null)
-                                    {
-                                        object a  = ((IDictionary)t.GetValue(ps))[item.Key];
-                                        
-                                        DbType? dbType = (DbType)a?.GetType().GetProperty("DbType")?.GetValue(a);
-                                        if (dbType != null)
-                                        {
-                                            ps.Add(item.Key, SDAC_ParseHelper.ParseValueByBDType(item.Value.ToString(), dbType), dbType);
-                                            continue;
-                                        }
-                                    }
-                                    // provo con il tipo originale
-                                    var origValue = iLookup[item.Key];
-                                    if (origValue != null)
-                                    {
-                                        ps.Add(item.Key, ParseAsOriginalTypeIfString(item.Value, origValue.GetType()));
-                                    }
-                                    else
-                                    {
-                                        ps.Add(item.Key, item.Value);
-                                    }
-                                }
-                            }
-                            else
+                            if (!ps.ParameterNames.Contains(item.Key))
                             {
                                 ps.Add(item.Key, item.Value);
+                                continue;
                             }
+                            if (!(item.Value is string))
+                            {
+                                ps.Add(item.Key, item.Value);
+                                continue;
+                            }
+
+                            // se item.value è una stringa, prova a fare il parse in base al tipo originale o al dbtype, con priorità al dbtype
+                            if (item.Value is string)
+                            {
+                                // provo con il dbtype
+                                if (t != null)
+                                {
+                                    object a = ((IDictionary)t.GetValue(ps))[item.Key];
+
+                                    DbType? dbType = (DbType)a?.GetType().GetProperty("DbType")?.GetValue(a);
+                                    if (dbType != null)
+                                    {
+                                        ps.Add(item.Key, SDAC_ParseHelper.ParseValueByBDType(item.Value.ToString(), dbType), dbType);
+                                        continue;
+                                    }
+                                }
+                                // provo con il tipo originale
+                                var origValue = iLookup[item.Key];
+                                if (origValue != null)
+                                {
+                                    ps.Add(item.Key, ParseAsOriginalTypeIfString(item.Value, origValue.GetType()));
+                                }
+                                else
+                                {
+                                    ps.Add(item.Key, item.Value);
+                                }
+                            }
+
                         }
                     }
                     else
