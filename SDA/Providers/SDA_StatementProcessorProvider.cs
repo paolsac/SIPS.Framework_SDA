@@ -77,6 +77,13 @@ namespace SIPS.Framework.SDA.Providers
             _StatementBuilderProvider = statementBuilderProvider;
         }
 
+        public string GetConnectionString(SDA_DataSourceDefinition dataSourceDefinition)
+        {
+            SDA_EndpointDescriptor endpoint = _endpointProvider.GetEndpoint(dataSourceDefinition.EndpointName);
+            return endpoint.ConnectionString;
+        }   
+
+
         public SDA_Response Read(SDA_DataSourceDefinition dataSourceDefinition)
         {
             return Read<object>(dataSourceDefinition);
@@ -190,6 +197,10 @@ namespace SIPS.Framework.SDA.Providers
             try
             {
                 SDA_EndpointDescriptor endpoint = _endpointProvider.GetEndpoint(dataSourceDefinition.EndpointName);
+
+                EndDataReader();
+
+
                 _providerForDataReader = _DBEndpoint_Command_FactoryProvider.LocateEndpointCommandProvider(dataSourceDefinition.EndpointName);
                 var statement = _StatementBuilderProvider.BuildQuery(dataSourceDefinition);
 

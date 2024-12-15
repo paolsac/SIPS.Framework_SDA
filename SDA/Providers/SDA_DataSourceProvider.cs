@@ -80,7 +80,7 @@ namespace SIPS.Framework.SDA.Providers
         //clear cache
         public void ClearCache()
         {
-            _cache.Dispose();
+            _cache.Clear();
         }
 
         private SDA_DataSourceDefinition _GetDataSource(string ds_name, Dictionary<string, object> external_parameters = null)
