@@ -58,6 +58,7 @@ namespace SIPS.Framework.SDAC_Processor.Providers.Operations
         private SDA_DataSourceDefinition _dataSource;
         private readonly SDA_StatementProcessorProvider _statementProcessorProvider;
 
+
         public SDAC_ETLOperation__SqlScriptProvider(SDAC_ProvidersCollectionForBaseProvider sDAC_ProvidersCollection, SDA_StatementProcessorProvider statementProcessorProvider, ILogger<SDAC_ETLOperation__SqlScriptProvider> logger)
             : base(sDAC_ProvidersCollection)
         {
@@ -70,32 +71,6 @@ namespace SIPS.Framework.SDAC_Processor.Providers.Operations
             SDA_Response response;
             try
             {
-
-                // se ci sono parametri da passare al datasource, li passa
-                //if (parameters != null && parameters.Any())
-                //{
-                //    // se il datasource ha già dei parametri, li sovrascrive con quelli passati
-                //    if (_dataSource.ParametersGetter != null)
-                //    {
-                //        var ps = _dataSource.ParametersGetter() as Dictionary<string, object>;
-                //        if (ps != null)
-                //        {
-                //            foreach (var p in ps)
-                //            {
-                //                if (parameters.ContainsKey(p.Key))
-                //                {
-                //                    ps[p.Key] = parameters[p.Key];
-                //                }
-                //            }
-                //        }
-                //    }
-
-                //    // se il datasource non ha parametri, li passa direttamente
-                //    else
-                //    {
-                //        _dataSource.ParametersGetter = () => parameters;
-                //    }
-                //}
 
                 _dataSource.OverrideParameters(parameters);
 

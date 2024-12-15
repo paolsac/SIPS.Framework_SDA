@@ -22,6 +22,8 @@ namespace SIPS.Framework.SDAC_Processor.Providers.Script
         private readonly CancellationTokenSource _cancellationTokenSource;
         private bool disposedValue;
 
+        public bool LogActive { get; set; }
+
         public SDAC_ETLScriptProcessorProvider(ILogger<SDAC_ETLScriptProcessorProvider> logger,
                                                SDAC_ProvidersCollectionForBaseProvider sDAC_ProvidersCollection,
                                                SDAC_ETLOperation_FactoryProvider operationFactory)
@@ -49,18 +51,29 @@ namespace SIPS.Framework.SDAC_Processor.Providers.Script
                 ISDAC_ETLOperation_Provider instance = _operationFactory.LocateOperationProvider(operationDef);
                 // ISDAC_ETLOperation_Provider instance = SDAC_OperationFactory.CreateOperation(opDef);
                 SDAC_Response responseSetup = instance.Setup(def);
+                instance.LogActive = LogActive;
                 if (!responseSetup.Success)
                 {
-                    _logger.LogError("Build - Operation {OperationName} setup failed, because {ErrorMessage}", instance.Name, responseSetup.ErrorMessage);
+                    if (LogActive)
+                    {
+                        _logger.LogError("Build - Operation {OperationName} setup failed, because {ErrorMessage}", instance.Name, responseSetup.ErrorMessage);
+                    }
                     return responseSetup;
                 }
                 program.AddOperation(instance);
             }
 
-            _logger.LogInformation("Build - Program {ProgramName} created", program.Name);
+            if (LogActive)
+            {
+                _logger.LogInformation("Build - Program {ProgramName} created", program.Name);
+            }
+
             foreach (var op in program.Operations)
             {
-                _logger.LogInformation("Build - Operation {OperationName} added to program {ProgramName}", op.Name, program.Name);
+                if (LogActive)
+                {
+                    _logger.LogInformation("Build - Operation {OperationName} added to program {ProgramName}", op.Name, program.Name);
+                }
             }
 
             return new SDAC_Response() { Success = true, Value = program };
@@ -78,14 +91,21 @@ namespace SIPS.Framework.SDAC_Processor.Providers.Script
         public async Task<SDAC_Response> RunProgramAsync(SDAC_ETLOperationProgram program, Dictionary<string, object> parameters)
         {
             CancellationToken cancellationToken = _cancellationTokenSource.Token;
+            if (LogActive)
+            {
+                _logger.LogInformation("Run - Program {ProgramName} started -------------------------", program.Name);
+            }
 
-            _logger.LogInformation("Run - Program {ProgramName} started -------------------------", program.Name);
             while (!program.ProgramFinished)
             {
                 if (cancellationToken.IsCancellationRequested)
                 {
                     Task.Delay(100).Wait();
-                    _logger.LogWarning("Run - Program {ProgramName} cancelled", program.Name);
+                    if (LogActive)
+                    {
+                        _logger.LogWarning("Run - Program {ProgramName} cancelled", program.Name);
+                    }
+
                     continue;
                 }
 
@@ -118,11 +138,31 @@ namespace SIPS.Framework.SDAC_Processor.Providers.Script
                         {
                             SDAC_OperationActionResponse response = await op.RunAsync(parameters, cancellationToken);
 
+                            // merge output parameters
+                            if (response.Succeded)
+                            {
+                                foreach (var key in response.OutputParameters.Keys)
+                                {
+                                    if (parameters.ContainsKey(key))
+                                    {
+                                        parameters[key] = response.OutputParameters[key];
+                                    }
+                                    else
+                                    {
+                                        parameters.Add(key, response.OutputParameters[key]);
+                                    }
+                                }
+                            }
+
+
                             // if the operation is terminated, then stop the program
                             if (cancellationToken.IsCancellationRequested)
                             {
                                 op.LockedUpdate(SDAC_OperationTerminationReasonOptions.Cancel, SDAC_OperationRunStateOptions.Terminated, SDAC_OperationCompletionResultOptions.None);
-                                _logger.LogWarning("Run - Operation {OperationName} cancelled", op.Name);
+                                if (LogActive)
+                                {
+                                    _logger.LogWarning("Run - Operation {OperationName} cancelled", op.Name);
+                                }
                                 return;
                             }
 
@@ -133,13 +173,18 @@ namespace SIPS.Framework.SDAC_Processor.Providers.Script
                             }
                             else
                             {
-                                _logger.LogError("Run - Operation {OperationName} failed, because {ErrorMessage}, {StatusMessage}", op.Name, response.ErrorMessage, response.StatusMessage);
+                                if (LogActive)
+                                {
+                                    _logger.LogError("Run - Operation {OperationName} failed, because {ErrorMessage}, {StatusMessage}", op.Name, response.ErrorMessage, response.StatusMessage);
+                                }
+
                                 op.LockedUpdate(SDAC_OperationTerminationReasonOptions.NotTerminated, SDAC_OperationRunStateOptions.Completed, SDAC_OperationCompletionResultOptions.Error);
                                 op.CompletionResult = SDAC_OperationCompletionResultOptions.Error;
                             }
-
-                            _logger.LogInformation("Run - Operation {OperationName} completed", op.Name);
-
+                            if (LogActive)
+                            {
+                                _logger.LogInformation("Run - Operation {OperationName} completed", op.Name);
+                            }
                         }
                         catch (System.Exception ex)
                         {
@@ -158,23 +203,10 @@ namespace SIPS.Framework.SDAC_Processor.Providers.Script
                 return new SDAC_Response() { Success = false, ErrorMessage = "Operation cancelled" };
             }
 
-            string operationsTable = ConsoleTable
-                .From<TableOperationResult>(program.Operations
-                    .OrderBy(ISDAC_ETLOperation_Provider => ISDAC_ETLOperation_Provider.Name)
-                    .Select(op => new TableOperationResult
-                    {
-                        Operation = op.Name,
-                        Status = op.RunState.ToString(),
-                        Result = op.CompletionResult.ToString(),
-                        Readiness = op.Readiness.ToString(),
-                        Error = op.ErrorMessage
-                    })
-                )
-                   .Configure(o => o.NumberAlignment = Alignment.Right)
-                   .ToStringAlternative();
-            _logger.LogInformation("Run - Program {ProgramName} completed with operations status: \n{OperationsTable}", program.Name, operationsTable);
-
-            _logger.LogInformation("Run - Program {ProgramName} completed -------------------------", program.Name);
+            if (LogActive)
+            {
+                _logger.LogInformation("Run - Program {ProgramName} completed -------------------------", program.Name);
+            }
 
             return new SDAC_Response() { Success = true };
         }

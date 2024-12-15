@@ -1,10 +1,11 @@
 ﻿using SIPS.Framework.SDA.Api;
+using System.Collections.Generic;
 
 namespace SIPS.Framework.SDAC_Processor.Api.SDAC_ETLOperation
 {
     public class SDAC_OperationActionResponse
     {
-
+        private readonly Dictionary<string, object> _outputParameters;
         public string StatusMessage { get; set; } = string.Empty;
         public string ErrorMessage { get; set; }
         public object Value { get; set; }
@@ -12,8 +13,18 @@ namespace SIPS.Framework.SDAC_Processor.Api.SDAC_ETLOperation
 
         public SDAC_OperationActionResponse()
         {
+            _outputParameters = new Dictionary<string, object>();
             Succeded = false;
         }
+
+        public void AddOutputParameter(string key, object value)
+        {
+            _outputParameters.Add(key, value);
+        }
+
+        // get readonly dictionary
+        public IReadOnlyDictionary<string, object> OutputParameters => _outputParameters;
+
 
         static public SDAC_OperationActionResponse CreateSuccessResponse()
         {

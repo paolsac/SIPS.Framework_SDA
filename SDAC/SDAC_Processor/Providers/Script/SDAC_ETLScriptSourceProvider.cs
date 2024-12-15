@@ -74,14 +74,14 @@ namespace SIPS.Framework.SDAC_Processor.Providers.Script
                     }
                     SDAC_ManifestDefinition manifest = response.Value as SDAC_ManifestDefinition;
 
-
+/*
                     response = ValidateSchema(jsonETLDocument, manifest);
                     if (!response.Success)
                     {
                         _logger.LogError("Error validating schema: {ErrorMessage} {StatusMessage}", response.ErrorMessage, response.StatusMessage);
                         throw new Exception($"Error validating schema: {response.ErrorMessage} {response.StatusMessage}");
                     }
-
+*/
                     response = ReadDefinition(jsonETLDocument, manifest);
                     if (!response.Success)
                     {

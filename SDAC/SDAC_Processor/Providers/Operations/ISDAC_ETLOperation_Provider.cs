@@ -14,6 +14,7 @@ namespace SIPS.Framework.SDAC_Processor.Providers.Operations
         string Name { get; set; }
         string ErrorMessage { get; set; }
         string ErrorCode { get; set; }
+        bool LogActive { get; set; }
 
         SDAC_OperationStartReadinessOptions Readiness { get; set; }
         SDAC_OperationRunStateOptions RunState { get; set; }

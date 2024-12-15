@@ -28,6 +28,7 @@ namespace SIPS.Framework.SDAC_Processor.Providers.Operations
         private readonly SDAC_ETLDataflowconnection_FactoryProvider _connectionFactory;
         SDAC_ETLTaskFlow _flow;
 
+
         public SDAC_ETLOperation__DataFlowProvider(
             SDAC_ProvidersCollectionForBaseProvider sDAC_ProvidersCollection,
             ILogger<SDAC_ETLOperation__DataFlowProvider> logger,
@@ -44,14 +45,23 @@ namespace SIPS.Framework.SDAC_Processor.Providers.Operations
         {
             try
             {
-                _logger.LogWarning("--- RunAsync {data_flow_name}", definition.name);
+                if (LogActive)
+                {
+                    _logger.LogWarning("RunAsync {data_flow_name}", definition.name);
+                }
                 foreach (var task in _flow.GetAllTasks())
                 {
-                    _logger.LogWarning("--- --- Task {task}", task.Key);
+                    if (LogActive)
+                    {
+                        _logger.LogWarning("--- --- Task {task}", task.Key);
+                    }
                 }
                 foreach (var relation in _flow.GetAllLinks())
                 {
-                    _logger.LogWarning("--- --- Relation {relation}", relation.Key);
+                    if (LogActive)
+                    {
+                        _logger.LogWarning("--- --- Relation {relation}", relation.Key);
+                    }
                 }
 
                 // get the source, target and transformation tasks
@@ -86,7 +96,10 @@ namespace SIPS.Framework.SDAC_Processor.Providers.Operations
                 }
 
                 // wait for all source tasks to be running
-                _logger.LogInformation("All source tasks started");
+                if (LogActive)
+                {
+                    _logger.LogInformation("All source tasks started");
+                }
 
 
                 // start the target tasks
@@ -108,8 +121,8 @@ namespace SIPS.Framework.SDAC_Processor.Providers.Operations
                 }
 
                 // check if all target tasks are running
-                if (!targetTasks.All(e => e.RunStatus == SDAC_ETLTaskRunStatusOptions.Running 
-                    || e.RunStatus== SDAC_ETLTaskRunStatusOptions.Completing
+                if (!targetTasks.All(e => e.RunStatus == SDAC_ETLTaskRunStatusOptions.Running
+                    || e.RunStatus == SDAC_ETLTaskRunStatusOptions.Completing
                     || e.RunStatus == SDAC_ETLTaskRunStatusOptions.Completed
                     ))
                 {
@@ -117,7 +130,10 @@ namespace SIPS.Framework.SDAC_Processor.Providers.Operations
                 }
 
                 // wait for all target tasks to be running
-                _logger.LogInformation("All target tasks started");
+                if (LogActive)
+                {
+                    _logger.LogInformation("All target tasks started");
+                }
 
                 // enter wait loop for all tasks to complete
                 bool allTasksCompleted = false;
@@ -135,7 +151,7 @@ namespace SIPS.Framework.SDAC_Processor.Providers.Operations
                         }
 
                         // source tasks are not significant if they are running
-                        if (task.RunStatus == SDAC_ETLTaskRunStatusOptions.Running && task.CompletionMode== SDAC_ETLTaskCompletionModeOptions.Master)
+                        if (task.RunStatus == SDAC_ETLTaskRunStatusOptions.Running && task.CompletionMode == SDAC_ETLTaskCompletionModeOptions.Master)
                         {
                             allTasksCompleted = false;
                             break;
@@ -193,6 +209,8 @@ namespace SIPS.Framework.SDAC_Processor.Providers.Operations
 
 
         }
+
+    
 
         public override SDAC_Response SpecificSetup(SDAC_ETLSourceDefinition def)
         {

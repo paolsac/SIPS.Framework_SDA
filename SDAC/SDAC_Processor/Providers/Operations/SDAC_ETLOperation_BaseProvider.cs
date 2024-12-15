@@ -53,6 +53,7 @@ namespace SIPS.Framework.SDAC_Processor.Providers.Operations
         private SDAC_OperationStartReadinessOptions _Readiness;
         private readonly SDAC_ProvidersCollectionForBaseProvider _sDAC_ProvidersCollection;
 
+        public bool LogActive { get; set; }
 
         public virtual string ProviderName { get => GetType().Name; }
 
@@ -87,6 +88,8 @@ namespace SIPS.Framework.SDAC_Processor.Providers.Operations
         }
 
         public abstract SDAC_Response SpecificSetup(SDAC_ETLSourceDefinition def);
+
+
 
         public SDAC_Response Setup(SDAC_ETLSourceDefinition def)
         {
