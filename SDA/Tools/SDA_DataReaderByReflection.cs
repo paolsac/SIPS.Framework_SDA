@@ -122,7 +122,7 @@ namespace SIPS.Framework.SDA.Tools
 
         public bool IsClosed { get; }
 
-        public int RecordsAffected { get; }
+        public int RecordsAffected { get { return _currentIndex; } }
 
     }
 

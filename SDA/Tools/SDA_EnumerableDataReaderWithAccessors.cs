@@ -9,6 +9,7 @@ namespace SIPS.Framework.SDA.Tools
         private IEnumerator<T> _enumerator;
         private List<Func<T, object>> _accessors;
         private List<string> _fieldNames;
+        private int _currentIndex = 0;
 
         public SDA_EnumerableDataReaderWithAccessors(IEnumerable<T> enumerable, List<Func<T, object>> accessors, List<string> fieldNames)
         {
@@ -18,7 +19,15 @@ namespace SIPS.Framework.SDA.Tools
         }
 
         public object GetValue(int i) => _accessors[i](_enumerator.Current);
-        public bool Read() => _enumerator.MoveNext();
+        public bool Read()
+        {
+            if (_enumerator.MoveNext())
+            {
+                _currentIndex++;
+                return true;
+            }
+            return false;
+        }
         public int FieldCount => _accessors.Count;
         public string GetName(int i) => _fieldNames[i];
         public void Dispose() => _enumerator.Dispose();
