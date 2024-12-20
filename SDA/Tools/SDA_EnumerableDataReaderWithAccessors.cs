@@ -9,7 +9,7 @@ namespace SIPS.Framework.SDA.Tools
         private IEnumerator<T> _enumerator;
         private List<Func<T, object>> _accessors;
         private List<string> _fieldNames;
-        private int _currentIndex = 0;
+        private int _currentIndex = -1;
 
         public SDA_EnumerableDataReaderWithAccessors(IEnumerable<T> enumerable, List<Func<T, object>> accessors, List<string> fieldNames)
         {
@@ -52,7 +52,7 @@ namespace SIPS.Framework.SDA.Tools
         public DataTable GetSchemaTable() => throw new NotImplementedException();
         public int Depth => throw new NotImplementedException();
         public bool IsClosed => throw new NotImplementedException();
-        public int RecordsAffected => throw new NotImplementedException();
+        public int RecordsAffected => _currentIndex+1;
         public bool GetBoolean(int i) => throw new NotImplementedException();
         public byte GetByte(int i) => throw new NotImplementedException();
         public long GetBytes(int i, long fieldOffset, byte[] buffer, int bufferoffset, int length) => throw new NotImplementedException();
