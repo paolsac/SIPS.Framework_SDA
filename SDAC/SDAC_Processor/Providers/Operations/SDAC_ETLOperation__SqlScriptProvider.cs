@@ -71,9 +71,7 @@ namespace SIPS.Framework.SDAC_Processor.Providers.Operations
             SDA_Response response;
             try
             {
-
                 _dataSource.OverrideParameters(parameters);
-
                 response = _statementProcessorProvider.Execute(_dataSource);
 
             }
@@ -82,7 +80,12 @@ namespace SIPS.Framework.SDAC_Processor.Providers.Operations
                 ErrorMessage = ex.Message;
                 response = new SDA_Response() { Success = false, ErrorMessage = ex.Message };
             }
-            return SDAC_OperationActionResponse.CreateFromSDA_Response(response);
+            var actionResponse = SDAC_OperationActionResponse.CreateFromSDA_Response(response);
+            if (response.Success && response.Value is Dictionary<string, object>)
+            {
+                (response.Value as Dictionary<string, object>).ToList().ForEach(p => actionResponse.AddOutputParameter(p.Key, p.Value));
+            }
+            return actionResponse;
         }
 
         public override SDAC_Response SpecificSetup(SDAC_ETLSourceDefinition def)
