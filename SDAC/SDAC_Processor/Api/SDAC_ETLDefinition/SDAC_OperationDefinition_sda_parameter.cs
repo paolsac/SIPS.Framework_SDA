@@ -6,6 +6,8 @@
         public  string data_type { get; set; }
         public  string value_as_string { get; set; }
         public  string scope { get; set; }
+        public  string direction { get; set; }
+        public  int size { get; set; }
     }
 
 }
