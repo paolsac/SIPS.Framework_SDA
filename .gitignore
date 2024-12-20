@@ -403,3 +403,4 @@ FodyWeavers.xsd
 /SDAC/SDAC_Processor/.nuget-push
 /SDA_Oracle/.nuget-push
 /TestApps/Lab01/Lab01.csproj
+/TestApps/Lab03/Lab03.csproj

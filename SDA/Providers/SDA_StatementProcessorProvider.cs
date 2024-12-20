@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Dapper;
+using Microsoft.Extensions.Logging;
 using SIPS.Framework.Core.AutoRegister.Interfaces;
 using SIPS.Framework.SDA.Api;
 using SIPS.Framework.SDA.interfaces;
@@ -179,8 +180,22 @@ namespace SIPS.Framework.SDA.Providers
                     }
 
                     ds.ExecCommand(statement, parameters);
-
                     response = new SDA_Response() { Success = true, StatusMessage = "Query executed", Value = null };
+                    
+                    var dapperParameters = parameters as DynamicParameters;
+                    
+                    if (dapperParameters != null)
+                    {
+                        foreach (var p in dapperParameters.ParameterNames)
+                        {
+                            var t = dapperParameters.Get<object>(p);
+                        }
+                        response.Value = dapperParameters.ParameterNames.ToDictionary(p => p, p => dapperParameters.Get<object>(p));
+                    }
+
+                    
+
+
                 }
                 return response;
             }
@@ -266,6 +281,11 @@ namespace SIPS.Framework.SDA.Providers
                             throw new Exception($"{targetDefinition.sourceType} Invalid source type");
                     }
 
+                    if (!result.Success)
+                    {
+                        response = new SDA_Response() { Success = false, StatusMessage = $"Bulk copy failed :{result.ErrorMessage}", Value = null };
+                        return response;
+                    }
                     response = new SDA_Response() { Success = true, StatusMessage = "Data copied executed", Value = result };
                 }
                 return response;
