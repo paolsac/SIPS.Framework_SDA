@@ -80,7 +80,7 @@ namespace SIPS.Framework.SDAC_Processor.Extensions
                     object value = null;
                     if (parameter.value_as_string != null)
                         value = SDAC_ParseHelper.ParseValue(parameter.value_as_string, parameter.data_type);
-                    parameters.Add(parameter.name, value: null, dbType: SDAC_ParseHelper.GetDBType(parameter.data_type), direction: direction, size:parameter.size);
+                    parameters.Add(parameter.name, value: value, dbType: SDAC_ParseHelper.GetDBType(parameter.data_type), direction: direction, size:parameter.size);
                     //if (parameter.value_as_string != null)
                     //    parameters.Add(parameter.name, value: SDAC_ParseHelper.ParseValue(parameter.value_as_string, parameter.data_type), dbType: SDAC_ParseHelper.GetDBType(parameter.data_type), direction: direction);
                     //else
