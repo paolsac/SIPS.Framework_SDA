@@ -1,4 +1,5 @@
-﻿using SIPS.Framework.SDAC_Processor.Api;
+﻿using Microsoft.Extensions.Logging;
+using SIPS.Framework.SDAC_Processor.Api;
 using SIPS.Framework.SDAC_Processor.Api.SDAC_ETLDefinition;
 using SIPS.Framework.SDAC_Processor.Api.SDAC_ETLOperation;
 using SIPS.Framework.SDAC_Processor.Providers.Base;
@@ -159,7 +160,8 @@ namespace SIPS.Framework.SDAC_Processor.Providers.Operations
                     // if they are different, return Unreachable, beacuse the result will not change
                     if (dependency.when_coded != predecessor.CompletionResult)
                     {
-                        Console.WriteLine($"- Operation {Name} is changint to not Unreachable, because dependency.when_coded = {dependency.when_coded} and predecessor.CompletionResult = {predecessor.CompletionResult}");
+                        _sDAC_ProvidersCollection.BaseLogger.LogWarning(ProviderName, $"- Operation {Name} is not Unreachable, because predecessor {predecessor.Name} completed as {predecessor.CompletionResult}");
+
                         return SDAC_OperationStartReadinessOptions.Unreachable;
                     }
                 }
