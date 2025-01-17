@@ -158,10 +158,13 @@ namespace SIPS.Framework.SDAC_Processor.Providers.Operations
 
                     // compare the completion result of the predecessor with the expected result
                     // if they are different, return Unreachable, beacuse the result will not change
-                    if (dependency.when_coded != predecessor.CompletionResult)
+                    var when_coded = dependency.when_coded;
+                    var completionResult = predecessor.CompletionResult;
+                    if (when_coded != completionResult)
                     {
                         
-                        _sDAC_ProvidersCollection.BaseLogger.LogWarning($"{ProviderName}- Operation {Name} is not reachable, because predecessor {predecessor.Name} completed as {predecessor.CompletionResult}");
+                        _sDAC_ProvidersCollection.BaseLogger.LogWarning($"{ProviderName}- Operation {Name} is not reachable, because predecessor {predecessor.Name} completed as {completionResult} instead of {when_coded}");
+                        _sDAC_ProvidersCollection.BaseLogger.LogWarning($"{ProviderName} (live reference)- Operation {Name} is not reachable, because predecessor {predecessor.Name} completed as {predecessor.CompletionResult} instead of {when_coded}");
 
                         return SDAC_OperationStartReadinessOptions.Unreachable;
                     }
