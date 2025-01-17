@@ -92,6 +92,7 @@ namespace SIPS.Framework.SDAC_Processor.Providers.Script
         public async Task<SDAC_Response> RunProgramAsync(SDAC_ETLOperationProgram program, Dictionary<string, object> parameters)
         {
             CancellationToken cancellationToken = _cancellationTokenSource.Token;
+            bool succeded = true;
             if (LogInformation)
             {
                 _logger.LogInformation("Run - Program {ProgramName} started -------------------------", program.Name);
@@ -112,6 +113,16 @@ namespace SIPS.Framework.SDAC_Processor.Providers.Script
 
                 if (program.HasOperationTerminated)
                 {
+                    _logger.LogError("Run - Program {ProgramName} has operation terminated", program.Name);
+                    succeded = false;
+                    break;
+                }
+
+                if (program.HasOperationNotReachable)
+                {
+                    _logger.LogError("Run - Program {ProgramName} has operation not reachable", program.Name);
+                    succeded = false;
+
                     break;
                 }
 
@@ -137,6 +148,11 @@ namespace SIPS.Framework.SDAC_Processor.Providers.Script
                     {
                         try
                         {
+                            if (LogInformation)
+                            {
+                                _logger.LogInformation("Run - Operation {OperationName} starting", op.Name);
+                            }
+
                             SDAC_OperationActionResponse response = await op.RunAsync(parameters, cancellationToken);
 
                             // merge output parameters
@@ -209,7 +225,7 @@ namespace SIPS.Framework.SDAC_Processor.Providers.Script
                 _logger.LogInformation("Run - Program {ProgramName} completed -------------------------", program.Name);
             }
 
-            return new SDAC_Response() { Success = true };
+            return new SDAC_Response() { Success = succeded };
         }
 
         override protected void Dispose(bool disposing)
