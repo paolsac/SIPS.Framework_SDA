@@ -160,7 +160,8 @@ namespace SIPS.Framework.SDAC_Processor.Providers.Operations
                     // if they are different, return Unreachable, beacuse the result will not change
                     if (dependency.when_coded != predecessor.CompletionResult)
                     {
-                        _sDAC_ProvidersCollection.BaseLogger.LogWarning(ProviderName, $"- Operation {Name} is not Unreachable, because predecessor {predecessor.Name} completed as {predecessor.CompletionResult}");
+                        
+                        _sDAC_ProvidersCollection.BaseLogger.LogWarning($"{ProviderName}- Operation {Name} is not reachable, because predecessor {predecessor.Name} completed as {predecessor.CompletionResult}");
 
                         return SDAC_OperationStartReadinessOptions.Unreachable;
                     }
