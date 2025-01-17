@@ -24,16 +24,19 @@ namespace SIPS.Framework.SDAC_Processor.Api.SDAC_ETLOperation
 
         internal void UpdateReadiness()
         {
-            ISDAC_ETLOperation_Provider[] operationsToCheck = _operations.Values
-                .Where(operation => operation.Readiness == SDAC_OperationStartReadinessOptions.NotReady)
-                .ToArray();
-
-            foreach (ISDAC_ETLOperation_Provider operation in operationsToCheck)
+            lock (_lock)
             {
-                var newReadiness = operation.CheckReadinessStatus(this);
-                if (newReadiness != SDAC_OperationStartReadinessOptions.NotReady)
+                ISDAC_ETLOperation_Provider[] operationsToCheck = _operations.Values
+                    .Where(operation => operation.Readiness == SDAC_OperationStartReadinessOptions.NotReady)
+                    .ToArray();
+
+                foreach (ISDAC_ETLOperation_Provider operation in operationsToCheck)
                 {
-                    operation.Readiness = newReadiness;
+                    var newReadiness = operation.CheckReadinessStatus(this);
+                    if (newReadiness != SDAC_OperationStartReadinessOptions.NotReady)
+                    {
+                        operation.Readiness = newReadiness;
+                    }
                 }
             }
         }
@@ -93,6 +96,17 @@ namespace SIPS.Framework.SDAC_Processor.Api.SDAC_ETLOperation
                 }
             }
         }
+
+        public bool HasOperationNotReachable
+        {
+            get
+            {
+                lock (_lock)
+                {
+                    return _operations.Values.Any(op => op.Readiness == SDAC_OperationStartReadinessOptions.Unreachable);
+                }
+            }
+        }   
 
         public ReadOnlyCollection<ISDAC_ETLOperation_Provider> Operations
         {
