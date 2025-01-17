@@ -26,11 +26,7 @@
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
   </PropertyGroup>
 
-  <ItemGroup>
-    <Compile Remove="FakesAssemblies\**" />
-    <EmbeddedResource Remove="FakesAssemblies\**" />
-    <None Remove="FakesAssemblies\**" />
-  </ItemGroup>
+
 
   <ItemGroup>
     <None Include="..\README.md">
@@ -44,12 +40,6 @@
   <ItemGroup>
     <PackageReference Include="Npgsql" Version="5.0.18" />
     <PackageReference Include="SIPS.Framework.SDA" Version="1.0.45-rc1" />
-  </ItemGroup>
-
-
-
-  <ItemGroup>
-    <AdditionalDesignTimeBuildInput Remove="FakesAssemblies\**" />
   </ItemGroup>
 
 </Project>
