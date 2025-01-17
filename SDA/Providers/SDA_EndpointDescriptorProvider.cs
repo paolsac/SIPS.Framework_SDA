@@ -9,6 +9,8 @@ using SIPS.Framework.SDA.Api;
 using SIPS.Framework.SDA.Providers.Base;
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text.Json;
 
 namespace SIPS.Framework.SDA.Providers
 {
@@ -153,20 +155,45 @@ namespace SIPS.Framework.SDA.Providers
             {
                 SecretId = secretId
             }).GetAwaiter().GetResult().SecretString;
-            dynamic secretJson = JObject.Parse(secretString);
+            Dictionary<string, string> secretJsonRaw = JsonSerializer.Deserialize<Dictionary<string, string>>(secretString);
+            Dictionary<string, string> secretJsonToUpper = secretJsonRaw.ToDictionary(kv => kv.Key.ToUpper(), kv => kv.Value);
             var database = _configuration.GetValue<string>($"{reference}DatabaseName");
             if (string.IsNullOrEmpty(database))
             {
                 throw new Exception($"DatabaseName is missing for {reference}");
             }
 
+
+            string host;
+            string port;
+            string username;
+            string password;
+
+            if (!secretJsonToUpper.TryGetValue("HOST", out host))
+            {
+                throw new System.Exception("Invalid Secret: no host specified");
+            }
+            if (!secretJsonToUpper.TryGetValue("PORT", out port))
+            {
+                throw new System.Exception("Invalid Secret: no port specified");
+            }
+            if (!secretJsonToUpper.TryGetValue("USERNAME", out username))
+            {
+                throw new System.Exception("Invalid Secret: no username specified");
+            }
+            if (!secretJsonToUpper.TryGetValue("PASSWORD", out password))
+            {
+                throw new System.Exception("Invalid Secret: no password specified");
+            }
+
+
             switch (technology)
             {
                 case "PostgreSQL":
                 case "Redshift":
-                    return $"Host='{secretJson.host}';Port='{secretJson.port}';Username='{secretJson.username}';Password='{secretJson.password}';Database='{database}';CommandTimeout=600";
+                    return $"Host='{host}';Port='{port}';Username='{username}';Password='{password}';Database='{database}';CommandTimeout=600";
                 case "SQLServer":
-                    return $"Server={secretJson.host};Database={database};User Id={secretJson.username};Password={secretJson.password};Persist Security Info=True; TrustServerCertificate = True";
+                    return $"Server={host};Database={database};User Id={username};Password={password};Persist Security Info=True; TrustServerCertificate = True";
                 default:
                     throw new System.NotSupportedException($"Technology {technology} not supported");
             }
