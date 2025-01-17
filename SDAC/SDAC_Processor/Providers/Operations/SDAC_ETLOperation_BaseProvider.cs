@@ -156,6 +156,12 @@ namespace SIPS.Framework.SDAC_Processor.Providers.Operations
                         return SDAC_OperationStartReadinessOptions.NotReady;
                     }
 
+                    // If the predecessor is completed, but the completion result is not set, return NotReady
+                    if (predecessor.CompletionResult == SDAC_OperationCompletionResultOptions.None)
+                    {
+                        return SDAC_OperationStartReadinessOptions.NotReady;
+                    }
+
                     // compare the completion result of the predecessor with the expected result
                     // if they are different, return Unreachable, beacuse the result will not change
                     var when_coded = dependency.when_coded;
