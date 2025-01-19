@@ -8,6 +8,7 @@ namespace SIPS.Framework.SDA.Constants
         public static readonly SDA_CNST_EndpointTechnologyName SQLServer = new SDA_CNST_EndpointTechnologyName("SQLServer");
         public static readonly SDA_CNST_EndpointTechnologyName PostgreSQL = new SDA_CNST_EndpointTechnologyName("PostgreSQL");
         public static readonly SDA_CNST_EndpointTechnologyName RedShift = new SDA_CNST_EndpointTechnologyName("RedShift");
+        public static readonly SDA_CNST_EndpointTechnologyName Oracle = new SDA_CNST_EndpointTechnologyName("Oracle");
 
 
         protected SDA_CNST_EndpointTechnologyName(string value) : base(value)
