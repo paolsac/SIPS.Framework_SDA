@@ -83,8 +83,8 @@ namespace SIPS.Framework.SDAC_Processor.Providers.Operations
             lock (_lock)
             {
                 TerminationReason = reason;
-                RunState = state;
                 CompletionResult = result;
+                RunState = state;
             }
         }
 
