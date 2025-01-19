@@ -194,6 +194,8 @@ namespace SIPS.Framework.SDA.Providers
                     return $"Host='{host}';Port='{port}';Username='{username}';Password='{password}';Database='{database}';CommandTimeout=600";
                 case "SQLServer":
                     return $"Server={host};Database={database};User Id={username};Password={password};Persist Security Info=True; TrustServerCertificate = True";
+                case "Oracle":
+                    return $"Data Source={host};User Id={username};Password={password};";
                 default:
                     throw new System.NotSupportedException($"Technology {technology} not supported");
             }
@@ -207,8 +209,8 @@ namespace SIPS.Framework.SDA.Providers
             {
                 case "PostgreSQL":
                 case "Redshift":
-                    return cnstring;
                 case "SQLServer":
+                case "Oracle":
                     return cnstring;
                 default:
                     throw new System.NotSupportedException($"Technology {technology} not supported");
