@@ -12,11 +12,11 @@ namespace SIPS.Framework.SDA.interfaces
 
         SDA_BullkCopyResult BulkLoadFromDataTable(string tableName, DataTable dtTable, SDA_ColumnMappingCollections columnMappings, SDA_CommandOptions options);
         SDA_BullkCopyResult BulkLoadFromDataReader(string tableName, IDataReader dtReader, SDA_ColumnMappingCollections columnMappings, SDA_CommandOptions options);
-        void BulkLoadFromDataTableWithoutMap(string tableName, DataTable dataTable);
+        void BulkLoadFromDataTableWithoutMap(string tableName, DataTable dataTable, SDA_CommandOptions options=null);
 
-        void ExecCommand(string query, object parameter = null);
-        IEnumerable<T> ReadFromquery<T>(string query, object parameter);
-        SDA_DataReaderWrapper BeginDataReader(string query, object parameter);
+        void ExecCommand(string query, object parameter = null, SDA_CommandOptions options=null);
+        IEnumerable<T> ReadFromquery<T>(string query, object parameter = null, SDA_CommandOptions options = null);
+        SDA_DataReaderWrapper BeginDataReader(string query, object parameter = null, SDA_CommandOptions options = null);
         void EndDataReader(SDA_DataReaderWrapper wrapper);
     }
 }

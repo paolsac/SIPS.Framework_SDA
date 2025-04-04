@@ -174,12 +174,20 @@ namespace SIPS.Framework.SDA.Providers
                     var statement = _StatementBuilderProvider.BuildQuery(dataSourceDefinition);
 
                     object parameters = null;
+                    SDA_CommandOptions commandOptions = null;
+
                     if (dataSourceDefinition.ParametersGetter != null)
                     {
                         parameters = dataSourceDefinition.ParametersGetter();
                     }
 
-                    ds.ExecCommand(statement, parameters);
+                    if (dataSourceDefinition.DynamicProperties.Any())
+                    {
+                        // check if there is a property of type "SDA_CommandOptions" them to the command
+                        commandOptions = dataSourceDefinition.DynamicProperties.Where(p => p.Value is SDA_CommandOptions).Select(p => p.Value as SDA_CommandOptions).FirstOrDefault();
+                    }
+
+                    ds.ExecCommand(statement, parameter: parameters, options: commandOptions);
                     response = new SDA_Response() { Success = true, StatusMessage = "Query executed", Value = null };
                     
                     var dapperParameters = parameters as DynamicParameters;

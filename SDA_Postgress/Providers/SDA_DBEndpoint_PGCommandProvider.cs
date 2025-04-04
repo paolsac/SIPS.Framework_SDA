@@ -50,37 +50,56 @@ namespace SIPS.Framework.SDA_Postgress.Providers
         }
 
 
-        public IEnumerable<T> ReadFromquery<T>(string query, object parameter)
+        public IEnumerable<T> ReadFromquery<T>(string query, object parameter = null, SDA_CommandOptions options = null)
         {
             string connectionString = GetConnectionString();
             using (var connection = new NpgsqlConnection(connectionString))
             {
                 connection.Open();
+
+                int? commandTimeout = null;
+                if (options != null)
+                {
+                    if (options.CommandTimeout != SDA_CommandOptions.COMMAND_TIMEOUT_NOT_SET)
+                    {
+                        commandTimeout = options.CommandTimeout;
+                    }
+                }
+
+                object param = null;
                 if (parameter != null)
                 {
-                    return connection.Query<T>(query, parameter);
+                    param = parameter;
                 }
-                else
-                {
-                    return connection.Query<T>(query);
-                }
+
+                return connection.Query<T>(query, param: param, commandTimeout: commandTimeout);
             }
         }
 
-        public void ExecCommand(string query, object parameter = null)
+        public void ExecCommand(string query, object parameter = null, SDA_CommandOptions options = null)
         {
             string connectionString = GetConnectionString();
             using (var connection = new NpgsqlConnection(connectionString))
             {
                 connection.Open();
-                if (parameter == null)
+
+                int? commandTimeout = null;
+                if (options != null)
                 {
-                    connection.Execute(query);
+                    if (options.CommandTimeout != SDA_CommandOptions.COMMAND_TIMEOUT_NOT_SET)
+                    {
+                        commandTimeout = options.CommandTimeout;
+                    }
                 }
-                else
+
+                object param = null;
+                if (parameter != null)
                 {
-                    connection.Execute(query, parameter);
+                    param = parameter;
                 }
+
+                connection.Execute(query, param: param, commandTimeout: commandTimeout);
+
             }
         }
 
@@ -121,8 +140,15 @@ namespace SIPS.Framework.SDA_Postgress.Providers
                 {
                     connection.Open();
 
-                    using (var writer = connection.BeginBinaryImport($"COPY {tableName} ({columns}) FROM STDIN (FORMAT BINARY)"))
+                    using (NpgsqlBinaryImporter writer = connection.BeginBinaryImport($"COPY {tableName} ({columns}) FROM STDIN (FORMAT BINARY)"))
                     {
+
+                        // set timeout if specified in options
+                        if (options != null && options.CommandTimeout != SDA_CommandOptions.COMMAND_TIMEOUT_NOT_SET)
+                        {
+                            writer.Timeout = TimeSpan.FromSeconds(options.CommandTimeout);
+                        }
+
                         foreach (DataRow row in dtTable.Rows)
                         {
                             writer.StartRow();
@@ -196,6 +222,13 @@ namespace SIPS.Framework.SDA_Postgress.Providers
                         NpgsqlBinaryImporter writer = connection.BeginBinaryImport(sql);
                         try
                         {
+
+                            // set timeout if specified in options
+                            if (options != null && options.CommandTimeout != SDA_CommandOptions.COMMAND_TIMEOUT_NOT_SET)
+                            {
+                                writer.Timeout = TimeSpan.FromSeconds(options.CommandTimeout);
+                            }
+
                             while (dtReader.Read())
                             {
                                 writer.StartRow();
@@ -209,6 +242,12 @@ namespace SIPS.Framework.SDA_Postgress.Providers
                                     writer.Complete();
                                     writer.Dispose();
                                     writer = connection.BeginBinaryImport(sql);
+
+                                    // set timeout if specified in options
+                                    if (options != null && options.CommandTimeout != SDA_CommandOptions.COMMAND_TIMEOUT_NOT_SET)
+                                    {
+                                        writer.Timeout = TimeSpan.FromSeconds(options.CommandTimeout);
+                                    }
                                 }
                             }
                             writer.Complete();
@@ -228,6 +267,13 @@ namespace SIPS.Framework.SDA_Postgress.Providers
                     {
                         using (var writer = connection.BeginBinaryImport($"COPY {tableName} ({columns}) FROM STDIN (FORMAT BINARY)"))
                         {
+
+                            // set timeout if specified in options
+                            if (options != null && options.CommandTimeout != SDA_CommandOptions.COMMAND_TIMEOUT_NOT_SET)
+                            {
+                                writer.Timeout = TimeSpan.FromSeconds(options.CommandTimeout);
+                            }
+
                             while (dtReader.Read())
                             {
                                 writer.StartRow();
@@ -251,12 +297,21 @@ namespace SIPS.Framework.SDA_Postgress.Providers
         }
 
 
-        public SDA_DataReaderWrapper BeginDataReader(string query, object parameter)
+        public SDA_DataReaderWrapper BeginDataReader(string query, object parameter, SDA_CommandOptions options)
         {
             string connectionString = GetConnectionString();
             var connection = new NpgsqlConnection(connectionString);
+
+            int? commandTimeout = null;
+            if (options != null)
+            {
+                if (options.CommandTimeout != SDA_CommandOptions.COMMAND_TIMEOUT_NOT_SET)
+                {
+                    commandTimeout = options.CommandTimeout;
+                }
+            }
             connection.Open();
-            IDataReader reader = connection.ExecuteReader(query, parameter);
+            IDataReader reader = connection.ExecuteReader(query, parameter, commandTimeout: commandTimeout);
             Guid guid = Guid.NewGuid();
             AddOpenConnection(guid, connection);
             var wrapper = new SDA_DataReaderWrapper(reader, guid);
@@ -292,7 +347,7 @@ namespace SIPS.Framework.SDA_Postgress.Providers
             connection.Dispose();
         }
 
-        public void BulkLoadFromDataTableWithoutMap(string tableName, DataTable dtTable)
+        public void BulkLoadFromDataTableWithoutMap(string tableName, DataTable dtTable, SDA_CommandOptions options = null)
         {
             string connectionString = GetConnectionString();
             using (var connection = new NpgsqlConnection(connectionString))
@@ -301,6 +356,13 @@ namespace SIPS.Framework.SDA_Postgress.Providers
                 string columns = string.Join(",", dtTable.Columns.Cast<DataColumn>().Select(c => c.ColumnName));
                 using (var writer = connection.BeginBinaryImport($"COPY {tableName} ({columns}) FROM STDIN (FORMAT BINARY)"))
                 {
+
+                    // set timeout if specified in options
+                    if (options != null && options.CommandTimeout != SDA_CommandOptions.COMMAND_TIMEOUT_NOT_SET)
+                    {
+                        writer.Timeout = TimeSpan.FromSeconds(options.CommandTimeout);
+                    }
+
                     foreach (DataRow row in dtTable.Rows)
                     {
                         writer.StartRow();

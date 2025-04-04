@@ -1,6 +1,7 @@
 ﻿using Dapper;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Oracle.ManagedDataAccess.Client;
 using SIPS.Framework.Core.AutoRegister.Interfaces;
 using SIPS.Framework.SDA.Api;
@@ -73,37 +74,56 @@ namespace SIPS.Framework.SDA_Oracle.Providers
         //}
 
 
-        public IEnumerable<T> ReadFromquery<T>(string query, object parameter)
+        public IEnumerable<T> ReadFromquery<T>(string query, object parameter = null, SDA_CommandOptions options = null)
         {
             string connectionString = GetConnectionString();
             using (var connection = new OracleConnection(connectionString))
             {
                 connection.Open();
+
+                int? commandTimeout = null;
+                if (options != null)
+                {
+                    if (options.CommandTimeout != SDA_CommandOptions.COMMAND_TIMEOUT_NOT_SET)
+                    {
+                        commandTimeout = options.CommandTimeout;
+                    }
+                }
+
+                object param = null;
                 if (parameter != null)
                 {
-                    return connection.Query<T>(query, parameter);
+                    param = parameter;
                 }
-                else
-                {
-                    return connection.Query<T>(query);
-                }
+
+                return connection.Query<T>(query, param: param, commandTimeout: commandTimeout);
             }
         }
 
-        public void ExecCommand(string query, object parameter = null)
+        public void ExecCommand(string query, object parameter = null, SDA_CommandOptions options = null)
         {
             string connectionString = GetConnectionString();
             using (var connection = new OracleConnection(connectionString))
             {
                 connection.Open();
-                if (parameter == null)
+
+                int? commandTimeout = null;
+                if (options != null)
                 {
-                    connection.Execute(query);
+                    if (options.CommandTimeout != SDA_CommandOptions.COMMAND_TIMEOUT_NOT_SET)
+                    {
+                        commandTimeout = options.CommandTimeout;
+                    }
                 }
-                else
+
+                object param = null;
+                if (parameter != null)
                 {
-                    connection.Execute(query, parameter);
+                    param = parameter;
                 }
+
+                connection.Execute(query, param: param, commandTimeout: commandTimeout);
+
             }
         }
 
@@ -160,6 +180,12 @@ namespace SIPS.Framework.SDA_Oracle.Providers
                         {
                             int batchSize = options.BatchSize > 0 ? options.BatchSize : options.BacthSizeDefault;
                             bulkCopy.BatchSize = batchSize;
+                        }
+
+                        // check timeout option
+                        if (options != null && options.CommandTimeout != SDA_CommandOptions.COMMAND_TIMEOUT_NOT_SET)
+                        {
+                            bulkCopy.BulkCopyTimeout = options.CommandTimeout;
                         }
 
                         bulkCopy.DestinationTableName = tableName; // Nome della tabella di destinazione nel database
@@ -238,6 +264,12 @@ namespace SIPS.Framework.SDA_Oracle.Providers
                             bulkCopy.BatchSize = batchSize;
                         }
 
+                        // check timeout option
+                        if (options != null && options.CommandTimeout != SDA_CommandOptions.COMMAND_TIMEOUT_NOT_SET)
+                        {
+                            bulkCopy.BulkCopyTimeout = options.CommandTimeout;
+                        }
+
                         bulkCopy.DestinationTableName = tableName; // Nome della tabella di destinazione nel database
                         bulkCopy.WriteToServer(dtReader);
                         rowsCopied = dtReader.RecordsAffected;
@@ -252,7 +284,7 @@ namespace SIPS.Framework.SDA_Oracle.Providers
             }
         }
 
-        public void BulkLoadFromDataTableWithoutMap(string tableName, DataTable dataTable)
+        public void BulkLoadFromDataTableWithoutMap(string tableName, DataTable dataTable, SDA_CommandOptions options = null)
         {
             string connectionString = GetConnectionString();
             using (var connection = new OracleConnection(connectionString))
@@ -261,18 +293,33 @@ namespace SIPS.Framework.SDA_Oracle.Providers
                 // Configurazione di SqlBulkCopy
                 using (OracleBulkCopy bulkCopy = new OracleBulkCopy(connection))
                 {
+
+                    // check timeout option
+                    if (options != null && options.CommandTimeout != SDA_CommandOptions.COMMAND_TIMEOUT_NOT_SET)
+                    {
+                        bulkCopy.BulkCopyTimeout = options.CommandTimeout;
+                    }
                     bulkCopy.DestinationTableName = tableName; // Nome della tabella di destinazione nel database
                     bulkCopy.WriteToServer(dataTable);
                 }
             }
         }
 
-        public SDA_DataReaderWrapper BeginDataReader(string query, object parameter)
+        public SDA_DataReaderWrapper BeginDataReader(string query, object parameter, SDA_CommandOptions options)
         {
             string connectionString = GetConnectionString();
             var connection = new OracleConnection(connectionString);
+
+            int? commandTimeout = null;
+            if (options != null)
+            {
+                if (options.CommandTimeout != SDA_CommandOptions.COMMAND_TIMEOUT_NOT_SET)
+                {
+                    commandTimeout = options.CommandTimeout;
+                }
+            }
             connection.Open();
-            IDataReader reader = connection.ExecuteReader(query, parameter);
+            IDataReader reader = connection.ExecuteReader(query, param: parameter, commandTimeout: commandTimeout);
             Guid guid = Guid.NewGuid();
             AddOpenConnection(guid, connection);
             var wrapper = new SDA_DataReaderWrapper(reader, guid);

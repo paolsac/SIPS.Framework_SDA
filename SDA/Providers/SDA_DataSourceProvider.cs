@@ -5,6 +5,7 @@ using Microsoft.Extensions.Logging;
 using SIPS.Framework.Core.AutoRegister.Interfaces;
 using SIPS.Framework.SDA.Api;
 using SIPS.Framework.SDA.Constants;
+using SIPS.Framework.SDA.Exceptions;
 using SIPS.Framework.SDA.Providers.Base;
 using System;
 using System.Collections.Generic;
@@ -12,7 +13,7 @@ using System.Linq;
 
 namespace SIPS.Framework.SDA.Providers
 {
-    public class SDA_DataSourceProvider : SDA_BaseProvider,  IFCAutoRegisterSingleton
+    public class SDA_DataSourceProvider : SDA_BaseProvider, IFCAutoRegisterSingleton
     {
         private readonly ILogger<SDA_DataSourceProvider> _logger;
         private readonly SDA_StatementProcessorProvider _statementProcessorProvider;
@@ -31,17 +32,17 @@ namespace SIPS.Framework.SDA.Providers
             _configuration = configuration;
             _statementProcessorProvider = statementProcessorProvider;
             _cache = new MemoryCache(new MemoryCacheOptions());
-            
+
             var dataSourceLibraryEndpointName = _configuration.GetValue<string>($"{ConfigConstants.SDA_ConfigurationFullSectionName}DataSourceLibrary:EndpointName");
-            if(dataSourceLibraryEndpointName == null)
+            if (dataSourceLibraryEndpointName == null)
             {
-                throw new Exception($"{ConfigConstants.SDA_ConfigurationFullSectionName}DataSourceLibrary:EndpointName is not defined in the configuration file");
+                throw new SDA_DatasourceException($"{ConfigConstants.SDA_ConfigurationFullSectionName}DataSourceLibrary:EndpointName is not defined in the configuration file");
             }
 
             var dataSourceLibraryQuery = _configuration.GetValue<string>($"{ConfigConstants.SDA_ConfigurationFullSectionName}DataSourceLibrary:Query");
             if (dataSourceLibraryQuery == null)
             {
-                throw new Exception($"{ConfigConstants.SDA_ConfigurationFullSectionName}DataSourceLibrary:Query is not defined in the configuration file");
+                throw new SDA_DatasourceException($"{ConfigConstants.SDA_ConfigurationFullSectionName}DataSourceLibrary:Query is not defined in the configuration file");
             }
             _getDS = (string ds_name) => new SDA_DataSourceDefinition()
             {
@@ -68,6 +69,32 @@ namespace SIPS.Framework.SDA.Providers
             public string[] Query_multiline { get; set; }
             public SDA_CNST_StatementLibaryType QueryLibrary_provider { get; set; }
             public Dictionary<string, string[]> QueryLibrary_content { get; set; }
+            public Dictionary<string, object> DynamicProperties { get; set; }
+        }
+
+        public Dictionary<string, object> DeserializeDynamicProperties(Dictionary<string, object> rawProperies)
+        {
+            Dictionary<string, object> returnValue = new Dictionary<string, object>();
+            if (rawProperies == null)
+                return returnValue;
+
+            foreach (var property in rawProperies)
+            {
+                if (property.Key == "SDA_CommandOptions")
+                {
+                    if (returnValue.ContainsKey(property.Key))
+                    {
+                        throw new SDA_NotValidDynamicPropertyException("Duplicate property name: " + property.Key);
+                    }
+                    returnValue.Add(property.Key, Newtonsoft.Json.JsonConvert.DeserializeObject<SDA_CommandOptions>(property.Value.ToString()));
+                }
+                else
+                {
+                    throw new SDA_NotValidDynamicPropertyException("Unknown property name: " + property.Key);
+                }
+            }
+
+            return returnValue;
         }
 
         public SDA_DataSourceDefinition GetDataSource(string ds_name, Dictionary<string, object> external_parameters = null)
@@ -96,21 +123,21 @@ namespace SIPS.Framework.SDA.Providers
                 else
                 {
                     _logger.LogError("Error reading datasource definition {ds_name}. Error: {error}", ds_name, response.StatusMessage);
-                    throw new Exception($"Error reading datasource definition {ds_name}, Error: {response.StatusMessage}");
+                    throw new SDA_DatasourceException($"Error reading datasource definition {ds_name}, Error: {response.StatusMessage}");
                 }
             }
 
 
-            List < implicitVarDef > castedValue = response.Value as List<implicitVarDef>;
-            if (!response.Success )
+            List<implicitVarDef> castedValue = response.Value as List<implicitVarDef>;
+            if (!response.Success)
             {
                 _logger.LogError("Error reading datasource definition {ds_name}. Error: {error}", ds_name, response.StatusMessage);
-                throw new Exception($"Error reading datasource definition {ds_name}, Error: {response.StatusMessage}");
+                throw new SDA_DatasourceException($"Error reading datasource definition {ds_name}, Error: {response.StatusMessage}");
             }
             if (response.Success && !castedValue.Any())
             {
                 _logger.LogError("Datasource definition {ds_name} not found", ds_name);
-                throw new Exception($"Datasource definition {ds_name} not found");
+                throw new SDA_DatasourceException($"Datasource definition {ds_name} not found");
             }
 
             var ds_def = castedValue.FirstOrDefault()?.ds_def;
@@ -122,10 +149,11 @@ namespace SIPS.Framework.SDA.Providers
                 StatementDefMode = implicitDataSource.StatementDefMode,
                 Query = implicitDataSource.Query,
                 PlaceholdersGetter = new Dictionary<string, Func<string>> { },
-                ParametersGetter = () => null
+                ParametersGetter = () => null,
+                DynamicProperties = DeserializeDynamicProperties(  implicitDataSource.DynamicProperties)
             };
 
-            if(external_parameters != null   )
+            if (external_parameters != null)
             {
                 var parameters = new DynamicParameters();
                 foreach (var parameter in external_parameters)

@@ -4,6 +4,9 @@ namespace SIPS.Framework.SDA.Api
 {
     public class SDA_CommandOptions
     {
+        public const int COMMAND_TIMEOUT_NOT_SET = -1;
+        public const int COMMAND_TIMEOUT_UNLIMITED= 0;
+
         public int CommandTimeout { get; set; }
         public int BatchSize { get; set; }
         public int BacthSizeDefault { get => 50000; }
@@ -11,6 +14,7 @@ namespace SIPS.Framework.SDA.Api
         readonly Dictionary<string, object> _customeOptions;
         public SDA_CommandOptions()
         {
+            CommandTimeout = -1;  // default is -1: means not set
             _customeOptions = new Dictionary<string, object>();
         }
 
