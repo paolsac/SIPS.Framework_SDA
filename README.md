@@ -18,6 +18,13 @@ It is a simple and easy to use library that provides a simple way to access data
 
 It is designed to be used with SIPS Framework.
 
+## SIPS.Framework_SDA_Oracle
+Simple Data Access in SIPS Framework for Oracle
+
+It is a simple and easy to use library that provides a simple way to access data from Oracle database.
+
+It is designed to be used with SIPS Framework.
+
 
 
 # SIPS.Framework_SDAC
